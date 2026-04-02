@@ -1,5 +1,4 @@
 # RTL_DESIGN_MASTERY
-# 🚀 RTL_DESIGN_MASTERY
 
 ## 📌 Overview
 
