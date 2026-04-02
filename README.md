@@ -7,7 +7,7 @@ This repository documents my learning journey through a **10-day RTL Design and 
 
 The workshop focuses on building a strong foundation in **Verilog RTL design, simulation, and synthesis** using industry-relevant open-source tools and the SKY130 standard cell library.
 
----
+
 
 ## 🎯 Objectives
 
