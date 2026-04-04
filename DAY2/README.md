@@ -1,226 +1,265 @@
-# 🚀 Day 2 – RTL Design & Synthesis (Detailed Notes)
+# 🚀 Day 2 – Timing Libraries, Hierarchical vs Flat Synthesis & Flop Coding Styles
 
 ---
 
-## 🔹 1. Hierarchical Design (Multiple Modules)
+# 📌 Introduction
 
-Instead of writing everything in one module, we divide the design into **submodules**.
+In Day 2, I moved beyond basic RTL coding and started understanding how digital designs are actually interpreted and implemented by synthesis tools. The focus was not only on writing Verilog code, but also on understanding how that code is translated into real hardware using timing libraries and optimization techniques.
 
-### 📌 Why?
-
-* Improves readability
-* Reusable design
-* Easier debugging
-* Industry standard practice
+This session provided clarity on how tools like Yosys convert abstract RTL descriptions into gate-level implementations, and how design decisions such as hierarchy and coding styles directly affect the final hardware in terms of performance, area, and power.
 
 ---
 
-### 🧩 Example Structure
-
-```
-Top Module
- ├── Submodule 1 (AND)
- └── Submodule 2 (OR)
-```
+# 🔹 1. Timing Libraries (.lib)
 
 ---
 
-### 💻 Verilog Implementation
+## 📖 What is a Timing Library?
 
-```verilog
-module sub_module(input a, input b, output y);
-    assign y = a | b;
-endmodule
+A timing library file (commonly referred to as a `.lib` file) is a standardized format used in digital design that contains detailed information about all the standard cells available for synthesis. These standard cells include basic logic gates such as AND, OR, NAND, NOR, as well as more complex elements like flip-flops and buffers.
 
-module sub_module1(input a, input b, output y);
-    assign y = a & b;
-endmodule
+The `.lib` file does not contain the actual circuit design; instead, it contains characterization data about each cell, including its delay, power consumption, and physical area.
 
-module multiple_module(input a, input b, input c, output y);
+---
 
-    wire net1;
+## 🧠 SKY130 PDK Overview
 
-    sub_module1 u1 (.a(a), .b(b), .y(net1));
-    sub_module  u2 (.a(net1), .b(c), .y(y));
+The SKY130 PDK (Process Design Kit) is an open-source technology provided by SkyWater based on 130nm CMOS technology.
 
-endmodule
+It provides all the necessary data required to design integrated circuits, including:
+
+* Standard cell libraries
+* Timing information
+* Power characteristics
+* Process variation data
+
+---
+
+## 🔍 Understanding Library Naming
+
+Example:
+
+```text id="libnaming"
+sky130_fd_sc_hd__tt_025C_1v80.lib
 ```
 
----
+### 🧠 Breakdown
 
-## 🔹 2. Hardware Understanding from Notes (Bit Expansion & Wiring)
-
-### 📌 Concept
-
-From my handwritten notes:
-
-* Operations like `y = 2 × a` are not simple arithmetic in hardware
-* They are implemented using:
-
-  * Bit shifting
-  * Wire connections
-  * Structural mapping
+* sky130 → Technology node (130nm)
+* fd_sc_hd → Standard cell library (high density)
+* tt → Typical process corner
+* 025C → Temperature = 25°C
+* 1v80 → Voltage = 1.8V
 
 ---
 
-### 📸 Concept Visualization
+## 🧠 What is PVT (Process, Voltage, Temperature)?
 
-*(From my notes – understanding hardware mapping)*
+### 🔸 Process
 
-👉 Refer to handwritten diagrams showing:
+Manufacturing variations (FF, SS, TT)
 
-* Bit expansion
-* Signal propagation
-* Output bit formation
+### 🔸 Voltage
 
----
+Supply variation affects speed
 
-### 🧠 Insight
+### 🔸 Temperature
 
-* Hardware = **connections + gates**, not equations
-* Every bit is physically mapped
-* Output width depends on operation
+Higher temperature slows circuits
 
 ---
 
-## 🔹 3. Synthesis Flow (Yosys)
+## 🔥 Key Insight
 
-### 🛠 Steps Used
+The same RTL design behaves differently under different PVT conditions. Hence, multiple libraries exist for different scenarios.
 
-```bash
-vim multiple_module.v
-yosys
+---
 
+## 🔧 Command Used
+
+```bash id="cmd_lib_full"
 read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
-read_verilog multiple_module.v
-
-synth -top multiple_module
-abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
-
-show
 ```
 
 ---
 
-### 📸 Yosys – Read Design
+## 🧠 What This Command Does
+
+* Loads all standard cells into Yosys
+* Provides delay, power, and area data
+* Enables mapping from RTL to real hardware
+
+---
+
+## 📸 From My Execution
 
 ![Yosys Read](screenshots/yosys_read.png)
 
 ---
 
-### 🧠 Internal Steps in Synthesis
+## 🧠 What I Observed Inside .lib
 
-* Elaboration
-* Optimization
-* Technology Mapping
-* Constant Propagation
-* Dead Code Removal
-
----
-
-## 🔹 4. RTL vs Netlist
-
-### 📌 Key Idea
-
-* RTL → Behavioral
-* Netlist → Structural
+* `cell()` → defines gates
+* `pin()` → defines I/O
+* `area` → size
+* `leakage_power` → power
+* `timing()` → delay
 
 ---
 
-### 📸 RTL vs Netlist
+## 🚀 Final Understanding
 
-![RTL vs Netlist](screenshots/rtl_vs_netlist.png)
-
----
-
-## 🔹 5. Flattening the Design
-
-### 📌 Why Flatten?
-
-* Removes hierarchy
-* Converts into single-level design
+👉 `.lib` is the bridge between **RTL and silicon**
 
 ---
 
-### 🔧 Command
+# 🔹 2. Hierarchical vs Flat Synthesis
 
-```bash
+---
+
+## 📖 Hierarchical Design
+
+Design is divided into modules for better readability and reuse.
+
+---
+
+## 📖 Flat Design
+
+All modules merged into a single level.
+
+---
+
+## 🔧 Commands Used
+
+```bash id="cmd_flat"
 flatten
 write_verilog multiple_module_flat.v
 ```
 
 ---
 
-### 🧠 Insight
+## 🧠 Explanation
 
-* Hierarchy → human-friendly
-* Flattened → tool-friendly
-
----
-
-## 🔹 6. Standard Cell Library
-
-👉 **sky130_fd_sc_hd**
+* flatten → removes hierarchy
+* write_verilog → saves synthesized design
 
 ---
 
-### 📌 Key Points
+## 🔥 Insight
 
-* Each cell has:
-
-  * Area
-  * Power
-  * Delay
+Hierarchy is useful for humans, while flattening helps tools optimize better.
 
 ---
 
-### ⚠️ Trade-offs
-
-| Parameter | Small Cell | Large Cell |
-| --------- | ---------- | ---------- |
-| Area      | Low        | High       |
-| Speed     | Slow       | Fast       |
-| Power     | Low        | High       |
+# 🔹 3. RTL Design Using Multiple Modules
 
 ---
 
-### 🧠 Extra Insight
+## 💻 Code
 
-* Synthesis chooses cells based on:
+```verilog id="cmd_rtl"
+wire net1;
 
-  * Timing
-  * Area
-  * Power
-
----
-
-## 🔹 7. Why PMOS is Wider?
-
-* PMOS mobility < NMOS mobility
-* PMOS is made wider to balance current
-
-👉 Ensures:
-
-* Equal rise/fall delay
-* Better switching
+sub_module1 u1 (.a(a), .b(b), .y(net1));
+sub_module  u2 (.a(net1), .b(c), .y(y));
+```
 
 ---
 
-## 🔹 8. Sequential Logic – D Flip-Flop
+## 🧠 Understanding
 
-### 📌 Why Flops?
-
-* Remove glitches
-* Store values
-* Synchronize with clock
+Signals flow through wires connecting modules, forming real hardware structure.
 
 ---
 
-### 💻 Code
+## 📸 RTL View
 
-```verilog
-module dff_const(input clk, input reset, output reg q);
+![RTL View](screenshots/rtl_view.png)
 
+---
+
+# 🔹 4. RTL vs Netlist
+
+---
+
+## 📖 RTL
+
+High-level behavioral description.
+
+---
+
+## 📖 Netlist
+
+Gate-level implementation.
+
+---
+
+## 📸 Comparison
+
+![RTL vs Netlist](screenshots/rtl_vs_netlist.png)
+
+---
+
+## 🧠 Insight
+
+RTL defines functionality, netlist defines implementation.
+
+---
+
+# 🔹 5. Synthesis Flow (Detailed)
+
+---
+
+## 🔧 Commands
+
+```bash id="cmd_flow"
+yosys
+
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+read_verilog multiple_module.v
+
+synth -top multiple_module
+
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+
+dfflibmap -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+
+write_verilog multiple_module_netlist.v
+```
+
+---
+
+## 🧠 Step-by-Step
+
+* yosys → start tool
+* read_liberty → load library
+* read_verilog → load RTL
+* synth → convert to logic
+* abc → map to gates
+* dfflibmap → map flip-flops
+* write_verilog → generate netlist
+
+---
+
+## 📸 Output
+
+![Yosys Output](screenshots/yosys_read.png)
+
+---
+
+# 🔹 6. Sequential Logic – Flip-Flops
+
+---
+
+## 📖 Why Needed
+
+Combinational logic cannot store data and may produce unstable outputs.
+
+---
+
+## 💻 Code
+
+```verilog id="cmd_dff"
 always @(posedge clk or posedge reset)
 begin
     if (reset)
@@ -228,62 +267,29 @@ begin
     else
         q <= 1'b1;
 end
-
-endmodule
 ```
 
 ---
 
-### 📸 DFF Mapping
+## 📸 Mapping
 
 ![DFF Mapping](screenshots/dff_mapping.png)
 
 ---
 
-### 🧠 Insight
+## 🧠 Insight
 
-* Flip-flops are mapped to real standard cells
-* Example:
-
-  * `sky130_fd_sc_hd__dfxtp`
+Flip-flops introduce memory and synchronization into digital systems.
 
 ---
 
-## 🔹 9. Asynchronous vs Synchronous Reset
-
-### 🟢 Asynchronous
-
-```verilog
-always @(posedge clk or posedge async_reset)
-```
-
-* Immediate reset
-* No clock dependency
+# 🔹 7. Simulation Flow
 
 ---
 
-### 🔵 Synchronous
+## 🔧 Commands
 
-```verilog
-always @(posedge clk)
-```
-
-* Happens on clock edge
-
----
-
-### 🧠 Interview Insight
-
-| Type  | Advantage | Disadvantage |
-| ----- | --------- | ------------ |
-| Async | Fast      | Risky        |
-| Sync  | Stable    | Slight delay |
-
----
-
-## 🔹 10. Simulation Flow
-
-```bash
+```bash id="cmd_sim"
 iverilog dff_const.v tb_dff_const.v
 ./a.out
 gtkwave tb_dff_const.vcd
@@ -291,84 +297,48 @@ gtkwave tb_dff_const.vcd
 
 ---
 
-### 📸 Waveform
+## 📸 Waveform
 
 ![Waveform](screenshots/waveform.png)
 
 ---
 
-### 🧠 Insight
+## 🧠 Understanding
 
-* Verifies correctness
-* Ensures design works as expected
-
----
-
-## 🔹 11. Sequential Synthesis Step
-
-```bash
-dfflibmap -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
-```
+Simulation verifies correctness before hardware implementation.
 
 ---
 
-### 🧠 Why Needed?
-
-* `abc` → combinational logic
-* `dfflibmap` → sequential logic
+# 🔹 8. Key Insights
 
 ---
 
-## 🔹 12. Netlist Visualization
-
-![Netlist View](screenshots/netlist_view.png)
-
----
-
-### 🧠 Insight
-
-* Final hardware structure
-* Shows real connections
+* RTL is abstract
+* `.lib` defines real hardware
+* Synthesis converts logic to gates
+* Coding style affects optimization
+* PVT affects circuit behavior
 
 ---
 
-## 🔹 13. Important Insights 💡
+# 📊 Summary
 
-* RTL is abstract → Netlist is physical
-* Hardware is built using gates, not equations
-* Synthesis optimizes automatically
-* Modular design is scalable
-
----
-
-## 🔹 14. Common Mistakes
-
-* Forgetting top module
-* Not loading library
-* Skipping waveform verification
+| Topic             | Status |
+| ----------------- | ------ |
+| Timing Libraries  | ✅      |
+| PVT Concepts      | ✅      |
+| Hierarchy vs Flat | ✅      |
+| RTL Design        | ✅      |
+| Synthesis Flow    | ✅      |
+| Flip-Flops        | ✅      |
+| Simulation        | ✅      |
 
 ---
 
-## 📊 Summary
+# 🚀 Final Conclusion
 
-| Topic                | Status |
-| -------------------- | ------ |
-| Multiple Modules     | ✅      |
-| Yosys Flow           | ✅      |
-| Flattening           | ✅      |
-| Standard Cells       | ✅      |
-| Flip-Flops           | ✅      |
-| Sequential Synthesis | ✅      |
+Day 2 provided a deep understanding of how digital designs are transformed from RTL descriptions into real hardware using synthesis tools. It emphasized the role of timing libraries, PVT conditions, and design structure in achieving efficient and optimized circuits.
 
 ---
 
-## 🚀 Final Takeaway
-
-* RTL → Abstract design
-* Synthesis → Converts to hardware
-* Mapping → Uses standard cells
-* Simulation → Validates design
-
----
-
-🔥 **Day 2 complete – Strong RTL → Gate-Level understanding**
+🔥 This forms the core foundation for real-world VLSI design and synthesis
