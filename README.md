@@ -1,99 +1,123 @@
-
-
-
-## 📌 Overview
-
-This repository documents my learning journey through a **10-day RTL Design and Synthesis Workshop** conducted by VLSI System Design (VSD).
-
-The workshop focuses on building a strong foundation in **Verilog RTL design, simulation, and synthesis** using industry-relevant open-source tools and the SKY130 standard cell library.
-
-
-
-## 🎯 Objectives
-
-* Learn **Verilog HDL** from basic to advanced RTL design
-* Perform **functional simulation** using iverilog
-* Analyze waveforms using **GTKWave**
-* Understand **logic synthesis** using Yosys
-* Map RTL designs to **SKY130 standard cells**
-* Generate **gate-level netlists and design visualizations**
-* Build a **project-ready GitHub portfolio**
+# 🚀 RTL Design Mastery Journey (Day 1 – Day 5)
 
 ---
 
-## 🧭 Design Flow
+## 🎯 Overview
 
-The complete RTL-to-silicon workflow followed in this workshop:
+This repository documents my complete journey of learning **RTL Design using Verilog**, covering both **fundamentals and practical implementation**.
 
-```text
-Verilog → Simulation → Waveform Analysis → Synthesis → Netlist Generation → Visualization → Documentation
+Although the program was structured as multiple days, I successfully completed all **labs and lectures within 10 days**, gaining hands-on experience in:
+
+* Writing synthesizable RTL code
+* Understanding simulation vs synthesis differences
+* Debugging design mismatches
+* Building combinational and sequential logic designs
+
+This journey reflects not just completion, but a **deep understanding of hardware design principles**.
+
+---
+
+## 🧠 What I Learned
+
+Throughout this journey, I developed strong fundamentals in:
+
+### 🔹 RTL Coding Concepts
+
+* Combinational vs Sequential Logic
+* Blocking vs Non-Blocking assignments
+* Sensitivity lists and their importance
+
+### 🔹 Design Techniques
+
+* MUX & DEMUX design
+* Case statements (complete vs incomplete)
+* IF-ELSE design styles
+* Generate blocks
+
+### 🔹 Debugging & Analysis
+
+* Synthesis vs Simulation mismatch
+* Latch inference due to improper coding
+* Writing synthesis-friendly RTL
+
+### 🔹 Verification Flow
+
+* RTL Simulation using GTKWave
+* Gate-Level Simulation (GLS)
+* Understanding synthesized netlists
+
+---
+
+## 🧪 Hands-on Implementations
+
+During this journey, I implemented and analyzed:
+
+* ✔️ Complete and Incomplete Case Statements
+* ✔️ IF condition variations (leading to latch inference)
+* ✔️ MUX Generator Design
+* ✔️ DEMUX using Case & Generate
+* ✔️ Partial Assign Logic
+* ✔️ Ripple Carry Adder (RCA)
+
+Each design was validated through:
+
+* RTL Simulation
+* Synthesis using Yosys
+* Gate-level verification
+
+---
+
+## ⚠️ Key Technical Insights
+
+* Incomplete CASE/IF statements lead to **latch inference**
+* Simulation results can be misleading without proper coding
+* Synthesis tools optimize logic differently than expected
+* Writing **clean and complete RTL** is critical for predictable hardware
+
+---
+
+## 📸 Project Structure
+
+```id="structure1"
+RTL_DESIGN_MASTERY/
+ ├── DAY1/
+ ├── DAY2/
+ ├── DAY3/
+ ├── DAY4/
+ ├── DAY5/
+ │    ├── screenshots/
+ │    └── README.md
 ```
 
----
+Each folder contains:
 
-## 🛠️ Tools Used
-
-* **iverilog** – Verilog simulation
-* **GTKWave** – Waveform viewer
-* **Yosys** – Logic synthesis
-* **SKY130 Standard Cell Library** – Technology mapping
-* **Linux / Cloud Environment** – Development setup
+* 📄 README with explanations
+* 📸 Screenshots (code, simulation, synthesis)
 
 ---
 
-## 📚 Workshop Modules
+## 🛠️ Tools & Technologies
 
-* Introduction to Verilog and HDL simulation
-* RTL coding styles and debugging
-* Digital design labs and testbench development
-* Introduction to Yosys and synthesis concepts
-* RTL to gate-level mapping using SKY130
-
----
-
-## 📁 Repository Structure
-
-Each day’s work will be organized as follows:
-
-```
-dayX_project/
-├── RTL design files (.v)
-├── Testbench files
-├── Simulation outputs (VCD)
-├── Synthesized netlist
-├── Design visualization (PNG)
-└── README.md
-```
+* **Verilog HDL**
+* **Yosys** – Synthesis
+* **GTKWave** – Waveform Viewer
+* **VS Code** – Development Environment
+* **Git & GitHub** – Version Control
 
 ---
 
-## 🧠 Key Learnings
+## 📈 My Growth
 
-* RTL design fundamentals
-* Difference between simulation and synthesis
-* Understanding how RTL maps to hardware
-* Standard cell-based design (NAND, OAI, etc.)
-* Writing clean and synthesizable Verilog
+This journey helped me transition from:
 
----
+* ❌ Writing basic code
+  ➡️ To
+* ✅ Designing **synthesis-ready RTL with debugging capability**
 
-## 🚀 Outcome
+I now understand:
 
-By the end of this workshop, I aim to:
-
-* Gain strong fundamentals in **digital design and RTL coding**
-* Understand **ASIC design flow and synthesis process**
-* Build a **complete portfolio for VLSI/ASIC roles**
+* How hardware is interpreted from RTL
+* How coding mistakes impact physical design
+* How to structure projects professionally
 
 ---
-
-## 🙌 Acknowledgment
-
-This learning journey is guided by **VLSI System Design (VSD)** and its instructors, providing practical exposure to real-world chip design workflows.
-
----
-
-## 📌 Note
-
-This repository will be updated daily with lab exercises, outputs, and learnings throughout the workshop.
-
