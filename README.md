@@ -1,52 +1,76 @@
-RTL Design and Synthesis – Learning Journey
-About this Repository
+<h1>RTL Design and Synthesis – Learning Journey</h1>
 
-This repository documents my hands-on learning in RTL design and synthesis using Verilog.
+<h2>About this Repository</h2>
 
-The main goal of this work is to understand how a digital design is written, simulated, and then converted into hardware using synthesis tools. Instead of just going through theory or lecture material, I focused on actually running the designs on my system and observing the results.
+<p>
+This repository contains my practice work on RTL design and synthesis using Verilog.
+I started this to understand how digital designs actually work when we write code and run them on tools.
+</p>
 
-This repo is not a collection of notes. It is a record of what I practiced, the commands I used, and the outputs I obtained during each step.
+<p>
+Instead of only watching lectures, I tried to run each example on my system and see what output I get.
+Sometimes I got errors, fixed them, and then continued. So this repo is more like a record of what I actually did.
+</p>
 
-What This Journey Covers
+<p>
+I am still learning, so this is not perfect or complete. But it shows my effort to understand the flow step by step.
+</p>
 
-In this learning journey, I worked on:
+<hr>
 
-Writing Verilog code for different digital designs
-Creating testbenches to verify functionality
-Running simulations and checking waveforms
-Performing synthesis using Yosys
-Understanding how RTL is converted into gate-level logic
+<h2>What I Worked On</h2>
 
-Each step helped me understand how the design behaves before and after synthesis.
+<ul>
+  <li>Writing basic Verilog modules</li>
+  <li>Creating testbenches and checking outputs</li>
+  <li>Running simulations using Icarus Verilog</li>
+  <li>Viewing waveforms in GTKWave</li>
+  <li>Running synthesis using Yosys</li>
+</ul>
 
-How I Approached the Labs
+<p>
+While doing this, I started understanding how the same design behaves in simulation and after synthesis.
+</p>
 
-For every task, I followed a simple approach:
+<hr>
 
-First, I wrote the Verilog code based on the requirement
-Then I created a testbench to verify the design
-After that, I ran simulation and checked the waveform output
-Finally, I performed synthesis and observed the generated logic
+<h2>How I Did the Work</h2>
 
-I made sure to run everything on my system and verify outputs instead of directly relying on external material.
+<p>
+For most of the designs, I followed a similar way:
+</p>
 
-Repository Structure
+<ul>
+  <li>Write the Verilog code</li>
+  <li>Create a testbench</li>
+  <li>Run simulation and check waveform</li>
+  <li>Run synthesis and see the generated logic</li>
+</ul>
 
-The work is organized day-wise:
+<p>
+I tried to keep things simple and focused on understanding what is happening instead of just completing the task.
+</p>
 
+<hr>
+
+<h2>Repository Structure</h2>
+
+<pre>
 Day1/
 Day2/
 Day3/
 Day4/
 Day5/
+</pre>
 
-Each folder contains the design files, testbench, and screenshots captured during execution.
+<p>
+Each folder contains my code files, testbench, and screenshots taken after running the commands.
+</p>
 
-What You Can Expect from This Repo
-Clear implementation of basic RTL concepts
-Simulation results with waveform verification
-Synthesis outputs using Yosys
-A step-by-step record of my progress
-Note
+<hr>
 
-This repository reflects my personal practice and understanding of RTL design and synthesis. The focus is on learning by doing, and the outputs shown are generated from my own system during lab work.
+<h2>Note</h2>
+
+<p>
+All the work here is done by me as part of practice. I referred to concepts when needed, but the execution and outputs are from my own system.
+</p>
