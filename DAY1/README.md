@@ -1,224 +1,200 @@
-# 🚀 Day 1: RTL Design Flow (In Progress)
+# Day 1 – RTL Design Flow (Hands-on Work)
 
-## 🎯 Objective
+## Objective
 
-The goal of Day 1 is to understand and practically implement the **RTL Design Flow**, which includes:
+The main aim of this lab was to understand how a digital design moves from writing Verilog code to getting a synthesized gate-level representation.
 
-* Writing Verilog code
-* Verifying functionality using simulation
-* Observing signal behavior using waveforms
-* Converting RTL into gate-level representation using synthesis
+Instead of just learning theory, I focused on running each step and observing what is actually happening in the tools.
 
 ---
 
-## 🧠 Introduction to RTL Design
+## What is RTL (Register Transfer Level)
 
-RTL (Register Transfer Level) is a way of describing digital circuits using a hardware description language like Verilog.
+RTL is a way of describing digital circuits in terms of data flow between registers and the operations performed on that data.
 
-Instead of directly building hardware, engineers follow a structured flow:
+In simple words, instead of thinking about gates directly, we describe:
+- What data is coming in
+- How it is processed
+- What output we should get
 
-1. **Design** → Write Verilog code
-2. **Verify** → Check logic using simulation
-3. **Analyze** → Observe waveform behavior
-4. **Synthesize** → Convert into gates (netlist)
+This is usually done using Verilog.
 
-👉 This complete process is called the **RTL design flow**.
-
----
-
-## ⚙️ Tools Used
-
-| Tool              | Purpose                             |
-| ----------------- | ----------------------------------- |
-| GitHub Codespaces | Cloud-based development environment |
-| Icarus Verilog    | Compilation and simulation          |
-| GTKWave           | Waveform visualization              |
-| Yosys             | RTL synthesis tool                  |
+One important thing I noticed is that RTL is more about behavior, not the actual hardware implementation.
 
 ---
 
-# 🔄 Complete Flow Implemented
+## RTL Design Flow (What I followed)
+
+From what I understood during this lab, the design flow is not just one step, it is a sequence:
+
+1. Write the design in Verilog  
+2. Create a testbench to verify it  
+3. Run simulation to check correctness  
+4. View waveform to understand signal changes  
+5. Run synthesis to convert into gates  
+
+Each step depends on the previous one. If simulation is wrong, synthesis is also meaningless.
 
 ---
 
-## 🧩 Step 1: RTL Design (MUX)
+## Tools Used
 
-We implemented a **2:1 Multiplexer (MUX)** using Verilog.
-
-👉 A MUX selects one of the inputs based on a select signal.
-
-### 📸 RTL Code
-
-![MUX Design](screenshots/01_mux_design.png)
-
-### 💡 Explanation
-
-* `i0`, `i1` → Input signals
-* `sel` → Selection signal
-* `y` → Output
-
-Working:
-
-* If `sel = 0` → Output = `i0`
-* If `sel = 1` → Output = `i1`
+- Icarus Verilog – for compiling and running simulation  
+- GTKWave – for viewing waveform  
+- Yosys – for synthesis  
+- GitHub Codespaces – where I executed everything  
 
 ---
 
-## 🧪 Step 2: Testbench Creation
+## Step 1 – Writing RTL Code (2:1 MUX)
 
-A **testbench** is used to verify the functionality of the design.
+I implemented a simple 2:1 multiplexer.
 
-### 📸 Testbench
+A multiplexer selects one input out of multiple inputs based on a select signal.
 
-![Testbench](screenshots/02_testbench.png)
+In this case:
+- Inputs: i0, i1  
+- Select: sel  
+- Output: y  
 
-### 💡 Explanation
+Working condition:
+- sel = 0 → output should follow i0  
+- sel = 1 → output should follow i1  
 
-* Applies different input combinations
-* Uses `$dumpfile` and `$dumpvars`
-* Generates waveform file (`.vcd`)
-
-👉 This helps in checking whether the design behaves correctly.
+While writing this, I understood that even a simple design needs to be clearly defined, otherwise verification becomes confusing.
 
 ---
 
-## ▶️ Step 3: Simulation
+## Step 2 – Testbench
 
-Simulation is performed using Icarus Verilog.
+After writing the design, I created a testbench to verify it.
 
-```bash
+The purpose of testbench is not to design logic, but to apply inputs and observe outputs.
+
+What I did in testbench:
+- Applied different combinations of i0, i1, sel  
+- Used `$dumpfile` and `$dumpvars`  
+- Generated a `.vcd` file  
+
+At first, I missed dumping signals properly, so waveform was empty. After fixing that, I got correct output.
+
+---
+
+## Step 3 – Simulation
+
+Commands used:
 iverilog good_mux.v tb_good_mux.v
-./a.out
 vvp a.out
-```
 
-### 💡 Explanation
+Here:
+- `iverilog` compiles the code  
+- `vvp` runs the simulation  
 
-* `iverilog` → Compiles the design
-* `vvp` → Executes simulation
-* Generates `.vcd` file
+After running this, a `.vcd` file was generated.
 
-👉 This step ensures logic correctness before moving to hardware.
-
----
-
-## 📊 Step 4: Waveform Analysis
-
-The waveform is viewed using GTKWave.
-
-### 📸 Waveform Output
-
-![Waveform](screenshots/03_waveform.png)
-
-### 💡 Explanation
-
-* Displays signal transitions over time
-* Helps verify correct behavior
-* Useful for debugging
-
-👉 Confirms that MUX output matches expected logic.
+This step is important because it checks whether the logic is working before moving to synthesis.
 
 ---
 
-## 🔧 Step 5: Reading Design in Yosys
+## Step 4 – Waveform Analysis
 
-Now we move to synthesis using Yosys.
+I opened the `.vcd` file in GTKWave.
 
-```bash
+In waveform:
+- I checked how output changes with respect to select signal  
+- Verified whether output matches expected MUX behavior  
+
+This step gave more clarity than just seeing console output.
+
+One thing I realized is that waveform helps in debugging much faster.
+
+---
+
+## Step 5 – Reading Design in Yosys
+
+To start synthesis:
 yosys
-```
 
 Inside Yosys:
-
-```tcl
 read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
 read_verilog good_mux.v
-```
 
-### 📸 Yosys Read
+Here:
+- Liberty file contains standard cell information  
+- Verilog file is the design we wrote  
 
-![Yosys Read](screenshots/04_yosys_read.png)
-
-### 💡 Explanation
-
-* Loads standard cell library
-* Reads Verilog design
-* Prepares synthesis environment
+This step prepares the design for synthesis.
 
 ---
 
-## 📈 Step 6: Design Statistics
+## Step 6 – Checking Design Statistics
 
-Yosys provides statistics about the design.
+After reading the design, I checked stats.
 
-### 📸 Yosys Stats
+It shows:
+- Number of wires  
+- Number of cells  
+- Structure of design  
 
-![Yosys Stats](screenshots/05_yosys_stats.png)
-
-### 💡 Explanation
-
-* Displays number of wires, cells, etc.
-* Confirms successful parsing of design
+This helped confirm that the design is properly read.
 
 ---
 
-## ⚙️ Step 7: Synthesis & Technology Mapping
+## Step 7 – Synthesis
 
-The RTL is converted into gate-level logic.
-
-```tcl
+Commands used:
 synth
 abc
-```
 
-### 📸 Synthesis Output
+During synthesis:
+- RTL is converted into gate-level logic  
+- Optimization happens automatically  
+- Mapping to standard cells is done  
 
-![Yosys Synthesis](screenshots/06_yosys_synthesis.png)
-
-### 💡 Explanation
-
-* Maps RTL to standard cells
-* Uses optimization techniques
-* Prepares final gate-level design
+One important thing I observed is that synthesis is not just conversion, it also simplifies logic.
 
 ---
 
-## 🔗 Step 8: Netlist Generation
+## Step 8 – Netlist Generation
 
-After synthesis, we get a **netlist**.
+After synthesis, a netlist is generated.
 
-👉 Netlist = list of gates + connections
+Netlist contains:
+- Gates used (like AND, OR, NOT)  
+- Connections between them  
 
-### 📸 Netlist
-
-![Netlist](screenshots/07_netlist.png)
-
-### 💡 Explanation
-
-* Represents actual hardware structure
-* Shows how components are connected
+This is closer to actual hardware representation compared to RTL.
 
 ---
 
-## 🧩 Step 9: Netlist Visualization
+## Step 9 – Netlist Visualization
 
-We can visualize the generated circuit.
+Using Yosys `show` command, I visualized the design.
 
-### 📸 Netlist View
+This gave a graphical view of how the circuit is implemented.
 
-![Netlist View](screenshots/08_netlist_view.png)
-
-### 💡 Explanation
-
-* Graphical representation of design
-* Easier to understand circuit connections
+It was easier to understand compared to raw netlist.
 
 ---
 
-# 🎯 Key Takeaways
+## Observations
 
-* Simulation is critical before synthesis
-* RTL describes behavior, not physical hardware
-* Synthesis converts logic into real gates
-* Netlist represents actual circuit implementation
-* Hands-on practice improves understanding significantly
+- Simulation and synthesis are completely different stages  
+- Correct simulation is necessary before synthesis  
+- RTL does not directly represent hardware  
+- Synthesis introduces actual gate-level structure  
+
+---
+
+## What I Learned
+
+- Basic RTL design flow from start to synthesis  
+- Writing and verifying Verilog code  
+- Importance of waveform analysis  
+- How synthesis tools convert logic  
+
+---
+
+## Note
+
+All the outputs and screenshots added in this folder are generated from my own system while performing the lab.
