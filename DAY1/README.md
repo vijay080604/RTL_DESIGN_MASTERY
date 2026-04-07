@@ -1,13 +1,5 @@
 # 🚀 Day 1: RTL Design Flow (In Progress)
 
----
-
-## 📅 Date
-
-(01-04-2026)
-
----
-
 ## 🎯 Objective
 
 The goal of Day 1 is to understand and practically implement the **RTL Design Flow**, which includes:
