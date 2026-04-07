@@ -1,123 +1,52 @@
-# 🚀 RTL Design Mastery Journey (Day 1 – Day 5)
+RTL Design and Synthesis – Learning Journey
+About this Repository
 
----
+This repository documents my hands-on learning in RTL design and synthesis using Verilog.
 
-## 🎯 Overview
+The main goal of this work is to understand how a digital design is written, simulated, and then converted into hardware using synthesis tools. Instead of just going through theory or lecture material, I focused on actually running the designs on my system and observing the results.
 
-This repository documents my complete journey of learning **RTL Design using Verilog**, covering both **fundamentals and practical implementation**.
+This repo is not a collection of notes. It is a record of what I practiced, the commands I used, and the outputs I obtained during each step.
 
-Although the program was structured as multiple days, I successfully completed all **labs and lectures within 10 days**, gaining hands-on experience in:
+What This Journey Covers
 
-* Writing synthesizable RTL code
-* Understanding simulation vs synthesis differences
-* Debugging design mismatches
-* Building combinational and sequential logic designs
+In this learning journey, I worked on:
 
-This journey reflects not just completion, but a **deep understanding of hardware design principles**.
+Writing Verilog code for different digital designs
+Creating testbenches to verify functionality
+Running simulations and checking waveforms
+Performing synthesis using Yosys
+Understanding how RTL is converted into gate-level logic
 
----
+Each step helped me understand how the design behaves before and after synthesis.
 
-## 🧠 What I Learned
+How I Approached the Labs
 
-Throughout this journey, I developed strong fundamentals in:
+For every task, I followed a simple approach:
 
-### 🔹 RTL Coding Concepts
+First, I wrote the Verilog code based on the requirement
+Then I created a testbench to verify the design
+After that, I ran simulation and checked the waveform output
+Finally, I performed synthesis and observed the generated logic
 
-* Combinational vs Sequential Logic
-* Blocking vs Non-Blocking assignments
-* Sensitivity lists and their importance
+I made sure to run everything on my system and verify outputs instead of directly relying on external material.
 
-### 🔹 Design Techniques
+Repository Structure
 
-* MUX & DEMUX design
-* Case statements (complete vs incomplete)
-* IF-ELSE design styles
-* Generate blocks
+The work is organized day-wise:
 
-### 🔹 Debugging & Analysis
+Day1/
+Day2/
+Day3/
+Day4/
+Day5/
 
-* Synthesis vs Simulation mismatch
-* Latch inference due to improper coding
-* Writing synthesis-friendly RTL
+Each folder contains the design files, testbench, and screenshots captured during execution.
 
-### 🔹 Verification Flow
+What You Can Expect from This Repo
+Clear implementation of basic RTL concepts
+Simulation results with waveform verification
+Synthesis outputs using Yosys
+A step-by-step record of my progress
+Note
 
-* RTL Simulation using GTKWave
-* Gate-Level Simulation (GLS)
-* Understanding synthesized netlists
-
----
-
-## 🧪 Hands-on Implementations
-
-During this journey, I implemented and analyzed:
-
-* ✔️ Complete and Incomplete Case Statements
-* ✔️ IF condition variations (leading to latch inference)
-* ✔️ MUX Generator Design
-* ✔️ DEMUX using Case & Generate
-* ✔️ Partial Assign Logic
-* ✔️ Ripple Carry Adder (RCA)
-
-Each design was validated through:
-
-* RTL Simulation
-* Synthesis using Yosys
-* Gate-level verification
-
----
-
-## ⚠️ Key Technical Insights
-
-* Incomplete CASE/IF statements lead to **latch inference**
-* Simulation results can be misleading without proper coding
-* Synthesis tools optimize logic differently than expected
-* Writing **clean and complete RTL** is critical for predictable hardware
-
----
-
-## 📸 Project Structure
-
-```id="structure1"
-RTL_DESIGN_MASTERY/
- ├── DAY1/
- ├── DAY2/
- ├── DAY3/
- ├── DAY4/
- ├── DAY5/
- │    ├── screenshots/
- │    └── README.md
-```
-
-Each folder contains:
-
-* 📄 README with explanations
-* 📸 Screenshots (code, simulation, synthesis)
-
----
-
-## 🛠️ Tools & Technologies
-
-* **Verilog HDL**
-* **Yosys** – Synthesis
-* **GTKWave** – Waveform Viewer
-* **VS Code** – Development Environment
-* **Git & GitHub** – Version Control
-
----
-
-## 📈 My Growth
-
-This journey helped me transition from:
-
-* ❌ Writing basic code
-  ➡️ To
-* ✅ Designing **synthesis-ready RTL with debugging capability**
-
-I now understand:
-
-* How hardware is interpreted from RTL
-* How coding mistakes impact physical design
-* How to structure projects professionally
-
----
+This repository reflects my personal practice and understanding of RTL design and synthesis. The focus is on learning by doing, and the outputs shown are generated from my own system during lab work.
