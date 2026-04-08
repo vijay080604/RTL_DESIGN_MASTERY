@@ -1,344 +1,228 @@
-# 🚀 Day 2 – Timing Libraries, Hierarchical vs Flat Synthesis & Flop Coding Styles
+<h1>DAY 2 – Timing Libraries, PVT and Multi-Module Synthesis</h1>
 
----
+<hr>
 
-# 📌 Introduction
+<h2>1. Timing Libraries (.lib)</h2>
 
-In Day 2, I moved beyond basic RTL coding and started understanding how digital designs are actually interpreted and implemented by synthesis tools. The focus was not only on writing Verilog code, but also on understanding how that code is translated into real hardware using timing libraries and optimization techniques.
+<h3>Explanation</h3>
+<p>
+A timing library (.lib) is a technology-specific file that contains detailed electrical and timing characterization of standard cells. 
+These libraries are generated after silicon characterization and are used by synthesis and timing tools to map RTL into real hardware.
+</p>
 
-This session provided clarity on how tools like Yosys convert abstract RTL descriptions into gate-level implementations, and how design decisions such as hierarchy and coding styles directly affect the final hardware in terms of performance, area, and power.
+<p>Each cell in the library contains:</p>
+<ul>
+<li>Propagation delay information for different input/output conditions</li>
+<li>Transition (slew) data</li>
+<li>Power consumption (dynamic and leakage)</li>
+<li>Input capacitance and output load constraints</li>
+<li>Setup and hold timing constraints for sequential elements</li>
+</ul>
 
----
+<p>
+The delay values are stored as lookup tables dependent on input transition, output load capacitance, and PVT conditions. 
+This makes synthesis timing-aware rather than purely logic-based.
+</p>
 
-# 🔹 1. Timing Libraries (.lib)
+<h3>Significance</h3>
+<ul>
+<li>Enables realistic hardware mapping</li>
+<li>Ensures timing-aware synthesis</li>
+<li>Allows accurate delay and power estimation</li>
+<li>Forms the foundation for Static Timing Analysis (STA)</li>
+</ul>
 
----
+<h3>Reference</h3>
+<ul>
+<li><a href="https://skywater-pdk.readthedocs.io/en/latest/" target="_blank">SkyWater SKY130 PDK Documentation</a></li>
+<li><a href="https://www.vlsi-expert.com/2012/03/delay-lookup-table-lib-file.html" target="_blank">Timing Library Explanation</a></li>
+</ul>
 
-## 📖 What is a Timing Library?
+<hr>
 
-A timing library file (commonly referred to as a `.lib` file) is a standardized format used in digital design that contains detailed information about all the standard cells available for synthesis. These standard cells include basic logic gates such as AND, OR, NAND, NOR, as well as more complex elements like flip-flops and buffers.
+<h2>2. SKY130 Library Explanation</h2>
 
-The `.lib` file does not contain the actual circuit design; instead, it contains characterization data about each cell, including its delay, power consumption, and physical area.
+<p><b>Example:</b> sky130_fd_sc_hd__tt_025C_1v80.lib</p>
 
----
+<ul>
+<li>sky130 → 130nm technology node</li>
+<li>fd → Foundry design</li>
+<li>sc → Standard cell</li>
+<li>hd → High density</li>
+<li>tt → Typical process</li>
+<li>025C → Temperature</li>
+<li>1v80 → Voltage</li>
+</ul>
 
-## 🧠 SKY130 PDK Overview
+<img src="screenshots/sky130_lib.png" width="600">
 
-The SKY130 PDK (Process Design Kit) is an open-source technology provided by SkyWater based on 130nm CMOS technology.
+<h3>Reference</h3>
+<ul>
+<li><a href="https://skywater-pdk.readthedocs.io/en/latest/rules/library.html" target="_blank">SKY130 Library Details</a></li>
+</ul>
 
-It provides all the necessary data required to design integrated circuits, including:
+<hr>
 
-* Standard cell libraries
-* Timing information
-* Power characteristics
-* Process variation data
+<h2>3. PVT (Process, Voltage, Temperature)</h2>
 
----
+<h3>Explanation</h3>
+<p>PVT represents real-world variations affecting circuit performance after fabrication.</p>
 
-## 🔍 Understanding Library Naming
+<ul>
+<li><b>Process:</b> Fast (FF), Slow (SS)</li>
+<li><b>Voltage:</b> High → faster, Low → slower</li>
+<li><b>Temperature:</b> High → slow, Low → fast</li>
+</ul>
 
-Example:
+<h3>Worst Case Condition</h3>
+<p>Slow process, low voltage, high temperature</p>
 
-```text id="libnaming"
-sky130_fd_sc_hd__tt_025C_1v80.lib
-```
+<h3>Reference</h3>
+<ul>
+<li><a href="https://www.synopsys.com/glossary/what-is-pvt.html" target="_blank">PVT Explanation</a></li>
+</ul>
 
-### 🧠 Breakdown
+<hr>
 
-* sky130 → Technology node (130nm)
-* fd_sc_hd → Standard cell library (high density)
-* tt → Typical process corner
-* 025C → Temperature = 25°C
-* 1v80 → Voltage = 1.8V
+<h2>4. Delay, Power, Capacitance and Leakage</h2>
 
----
+<h3>Delay</h3>
+<p>Time taken for input change to reflect at output.</p>
 
-## 🧠 What is PVT (Process, Voltage, Temperature)?
+<h3>Power</h3>
+<p>P = α × C × V² × f</p>
 
-### 🔸 Process
+<h3>Capacitance</h3>
+<p>Higher capacitance increases delay.</p>
 
-Manufacturing variations (FF, SS, TT)
+<h3>Reference</h3>
+<ul>
+<li><a href="https://www.vlsi-expert.com/2012/02/power-consumption-in-cmos.html" target="_blank">Power in CMOS</a></li>
+</ul>
 
-### 🔸 Voltage
+<hr>
 
-Supply variation affects speed
+<h2>5. Comparison of Same Modules</h2>
 
-### 🔸 Temperature
+<p>
+Different RTL implementations can produce the same functionality but different performance due to gate depth, logic levels, and load distribution.
+</p>
 
-Higher temperature slows circuits
+<hr>
 
----
+<h2>6. Stacked PMOS</h2>
 
-## 🔥 Key Insight
+<p>
+Stacked PMOS refers to multiple PMOS transistors connected in series, leading to higher resistance and increased delay.
+</p>
 
-The same RTL design behaves differently under different PVT conditions. Hence, multiple libraries exist for different scenarios.
+<hr>
 
----
+<h2>7. Divide and Conquer</h2>
 
-## 🔧 Command Used
+<p>
+Large designs are divided into smaller modules for better readability, debugging, and synthesis optimization.
+</p>
 
-```bash id="cmd_lib_full"
+<hr>
+
+<h2>LAB SECTION</h2>
+
+<h3>Objective</h3>
+<ul>
+<li>Multi-module design</li>
+<li>D Flip-Flop implementation</li>
+<li>Synthesis and GLS</li>
+</ul>
+
+<hr>
+
+<h2>1. Multiple Modules</h2>
+
+<img src="screenshots/multiple_modules_code.png" width="600">
+<img src="screenshots/multiple_modules_synthesis.png" width="600">
+<img src="screenshots/multiple_modules_flat.png" width="600">
+<img src="screenshots/multiple_modules_stats.png" width="600">
+
+<hr>
+
+<h2>2. DFF Async Reset</h2>
+
+<img src="screenshots/code1.png" width="600">
+<img src="screenshots/dff_asyncres_synthesis.png" width="600">
+<img src="screenshots/dff_asyncres_simulation.png" width="600">
+
+<hr>
+
+<h2>3. DFF Async Set</h2>
+
+<img src="screenshots/code2.png" width="600">
+<img src="screenshots/dff_async_set_synthesis.png" width="600">
+<img src="screenshots/async_set_simulation.png" width="600">
+
+<hr>
+
+<h2>4. DFF Sync Reset</h2>
+
+<img src="screenshots/dff_syncres2.png" width="600">
+
+<hr>
+
+<h2>5. Multiply by 2</h2>
+
+<img src="screenshots/mul2_code.png" width="600">
+<img src="screenshots/mul2_synthesis.png" width="600">
+
+<hr>
+
+<h2>6. Multiply by 8</h2>
+
+<img src="screenshots/mul8_code.png" width="600">
+<img src="screenshots/mul8_synthesis.png" width="600">
+
+<hr>
+
+<h2>7. Flattened Design</h2>
+
+<img src="screenshots/flat_multiple_mosules_synthesis.png" width="600">
+
+<hr>
+
+<h2>Commands</h2>
+
+<pre>
 read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
-```
-
----
-
-## 🧠 What This Command Does
-
-* Loads all standard cells into Yosys
-* Provides delay, power, and area data
-* Enables mapping from RTL to real hardware
-
----
-
-## 📸 From My Execution
-
-![Yosys Read](screenshots/yosys_read.png)
-
----
-
-## 🧠 What I Observed Inside .lib
-
-* `cell()` → defines gates
-* `pin()` → defines I/O
-* `area` → size
-* `leakage_power` → power
-* `timing()` → delay
-
----
-
-## 🚀 Final Understanding
-
-👉 `.lib` is the bridge between **RTL and silicon**
-
----
-
-# 🔹 2. Hierarchical vs Flat Synthesis
-
----
-
-## 📖 Hierarchical Design
-
-Design is divided into modules for better readability and reuse.
-
----
-
-## 📖 Flat Design
-
-All modules merged into a single level.
-
----
-
-## 🔧 Commands Used
-
-```bash id="cmd_flat"
-flatten
-write_verilog multiple_module_flat.v
-```
-
----
-
-## 🧠 Explanation
-
-* flatten → removes hierarchy
-* write_verilog → saves synthesized design
-
----
-
-## 🔥 Insight
-
-Hierarchy is useful for humans, while flattening helps tools optimize better.
-
----
-
-# 🔹 3. RTL Design Using Multiple Modules
-
----
-
-## 💻 Code
-
-```verilog id="cmd_rtl"
-wire net1;
-
-sub_module1 u1 (.a(a), .b(b), .y(net1));
-sub_module  u2 (.a(net1), .b(c), .y(y));
-```
-
----
-
-## 🧠 Understanding
-
-Signals flow through wires connecting modules, forming real hardware structure.
-
----
-
-## 📸 RTL View
-
-![RTL View](screenshots/rtl_view.png)
-
----
-
-# 🔹 4. RTL vs Netlist
-
----
-
-## 📖 RTL
-
-High-level behavioral description.
-
----
-
-## 📖 Netlist
-
-Gate-level implementation.
-
----
-
-## 📸 Comparison
-
-![RTL vs Netlist](screenshots/rtl_vs_netlist.png)
-
----
-
-## 🧠 Insight
-
-RTL defines functionality, netlist defines implementation.
-
----
-
-# 🔹 5. Synthesis Flow (Detailed)
-
----
-
-## 🔧 Commands
-
-```bash id="cmd_flow"
-yosys
-
-read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
-read_verilog multiple_module.v
-
-synth -top multiple_module
-
-abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
-
+read_verilog multiple_modules.v
+synth -top multiple_modules
 dfflibmap -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+clean
+write_verilog multiple_modules_net.v
+</pre>
 
-write_verilog multiple_module_netlist.v
-```
+<pre>
+iverilog my_lib/verilog_model/primitives.v 
+my_lib/verilog_model/sky130_fd_sc_hd.v 
+verilog_files/multiple_modules_net.v 
+verilog_files/multiple_modules_tb.v
 
----
-
-## 🧠 Step-by-Step
-
-* yosys → start tool
-* read_liberty → load library
-* read_verilog → load RTL
-* synth → convert to logic
-* abc → map to gates
-* dfflibmap → map flip-flops
-* write_verilog → generate netlist
-
----
-
-## 📸 Output
-
-![Yosys Output](screenshots/yosys_read.png)
-
----
-
-# 🔹 6. Sequential Logic – Flip-Flops
-
----
-
-## 📖 Why Needed
-
-Combinational logic cannot store data and may produce unstable outputs.
-
----
-
-## 💻 Code
-
-```verilog id="cmd_dff"
-always @(posedge clk or posedge reset)
-begin
-    if (reset)
-        q <= 1'b0;
-    else
-        q <= 1'b1;
-end
-```
-
----
-
-## 📸 Mapping
-
-![DFF Mapping](screenshots/dff_mapping.png)
-
----
-
-## 🧠 Insight
-
-Flip-flops introduce memory and synchronization into digital systems.
-
----
-
-# 🔹 7. Simulation Flow
-
----
-
-## 🔧 Commands
-
-```bash id="cmd_sim"
-iverilog dff_const.v tb_dff_const.v
 ./a.out
-gtkwave tb_dff_const.vcd
-```
+gtkwave multiple_modules.vcd
+</pre>
 
----
+<hr>
 
-## 📸 Waveform
+<h2>Key Takeaways</h2>
+<ul>
+<li>Timing libraries enable realistic synthesis</li>
+<li>PVT variations affect chip performance</li>
+<li>Hierarchical design improves scalability</li>
+<li>GLS validates synthesized design</li>
+</ul>
 
-![Waveform](screenshots/waveform.png)
+<hr>
 
----
-
-## 🧠 Understanding
-
-Simulation verifies correctness before hardware implementation.
-
----
-
-# 🔹 8. Key Insights
-
----
-
-* RTL is abstract
-* `.lib` defines real hardware
-* Synthesis converts logic to gates
-* Coding style affects optimization
-* PVT affects circuit behavior
-
----
-
-# 📊 Summary
-
-| Topic             | Status |
-| ----------------- | ------ |
-| Timing Libraries  | ✅      |
-| PVT Concepts      | ✅      |
-| Hierarchy vs Flat | ✅      |
-| RTL Design        | ✅      |
-| Synthesis Flow    | ✅      |
-| Flip-Flops        | ✅      |
-| Simulation        | ✅      |
-
----
-
-# 🚀 Final Conclusion
-
-Day 2 provided a deep understanding of how digital designs are transformed from RTL descriptions into real hardware using synthesis tools. It emphasized the role of timing libraries, PVT conditions, and design structure in achieving efficient and optimized circuits.
-
----
-
-🔥 This forms the core foundation for real-world VLSI design and synthesis
+<h2>Conclusion</h2>
+<p>
+This section connects RTL design with real hardware behavior using timing libraries, synthesis, and simulation.
+</p>
