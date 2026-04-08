@@ -1,95 +1,125 @@
-# 📘 Day 3 – Logic Optimization in RTL Design
-
-## 🚀 Overview
-Day 3 focuses on **logic optimization techniques** in digital design using Yosys.
-
-The main goal is:
-- Reduce unnecessary hardware  
-- Improve performance  
-- Optimize area and power  
-
-We explored both:
-- ✅ Combinational Optimization  
-- ✅ Sequential Optimization  
+# DAY 3 – Logic Optimization in RTL Design
 
 ---
 
-# 📚 Topics Covered
+## 1. Introduction to Logic Optimization
+
+Logic optimization is a critical step in digital design where redundant or inefficient logic is removed without altering the functional behavior of the circuit. The primary objective is to improve area, speed, and power efficiency.
+
+Optimization is automatically performed by synthesis tools such as Yosys, but understanding how and why it happens is essential for writing efficient RTL.
 
 ---
 
-## 🔹 1. Combinational Logic Optimization
+## 2. Combinational Logic Optimization
+
+### Explanation
+
+Combinational logic optimization focuses on simplifying Boolean expressions and reducing unnecessary logic gates. The synthesis tool analyzes the logic and applies algebraic transformations to minimize gate count and logic depth.
 
 ![Combinational Optimization](screenshots/combinational_logic_optimisation.png)
 
-### 💡 Concept:
-Optimization means **reducing logic complexity without changing functionality**
+---
 
-### 🔍 Key Benefits:
-- Less hardware (area reduction)
-- Faster circuits
-- Lower power consumption
+### Engineering Insight
+
+Reducing logic depth directly improves propagation delay. Fewer gates also result in reduced capacitance, which lowers both dynamic power consumption and switching delay.
 
 ---
 
-## 🔹 2. Constant Propagation
+## 3. Constant Propagation
 
-![Constant Propagation](screenshots/constant_propogation.png)
+### Explanation
 
-### 💡 Concept:
-If any signal is constant (0 or 1), synthesis simplifies the logic.
+Constant propagation is a technique where constant values (logic 0 or logic 1) are propagated through the circuit, allowing the synthesis tool to eliminate unnecessary logic.
 
-### 🔍 Example:
+![Constant Propagation](screenshots/constant_propagation.png)
+
+---
+
+### Example
+
 ```
 Y = (A.B + C)'
 If A = 0 → Y = (0 + C)' = C'
 ```
 
-👉 AND gate removed → only inverter remains
+---
 
-### 🔥 Insight:
-- Reduces transistor count  
-- Simplifies circuit drastically  
+### Analysis
+
+Since A is always 0, the AND operation becomes redundant. The logic simplifies to a single inverter. This reduces both gate count and delay.
 
 ---
 
-## 🔹 3. Boolean Logic Optimization
+### Engineering Insight
+
+Constant propagation is one of the most powerful optimizations because it can completely remove logic blocks, not just simplify them.
+
+---
+
+## 4. Boolean Logic Optimization
+
+### Explanation
+
+Boolean optimization involves applying Boolean algebra to reduce complex expressions into minimal forms.
 
 ![Boolean Optimization](screenshots/boolean_optimisation.png)
 
-### 💡 Concept:
-Using Boolean algebra to simplify complex logic expressions
+---
 
-### 🔍 Example:
+### Example
+
 ```
 y = a ? (b ? c : (c ? a : 0)) : (!c)
 ```
 
-👉 After simplification:
-```
-y = a ⊕ c
-```
+After simplification:
 
-### 🔥 Insight:
-- Complex mux logic → XOR gate  
-- Faster + smaller design  
+```
+y = a ^ c
+```
 
 ---
 
-## 🔹 4. Advanced Optimization Techniques
+### Analysis
+
+A nested multiplexer structure is reduced to a single XOR gate. This significantly reduces logic complexity and improves performance.
+
+---
+
+### Engineering Insight
+
+Replacing multiplexers with simple gates reduces both area and delay. XOR-based implementations are often more efficient than deeply nested conditional logic.
+
+---
+
+## 5. Advanced Optimization Techniques
+
+### Explanation
+
+Advanced optimization techniques go beyond simple Boolean simplification and target structural improvements in the design.
 
 ![Advanced Optimization](screenshots/advanced_optimisation.png)
 
-### 💡 Includes:
-- **State Optimization** → Remove unused states  
-- **Cloning** → Duplicate logic to improve timing  
-- **Retiming** → Move flip-flops to balance delays  
+---
+
+### Techniques
+
+- State optimization removes unused or redundant states in sequential circuits  
+- Cloning duplicates logic paths to reduce fanout delay  
+- Retiming moves flip-flops across combinational logic to balance timing  
 
 ---
 
-# ⚙️ Standard Synthesis Flow
+### Engineering Insight
 
-```tcl
+These optimizations are critical in high-performance designs where timing closure is challenging.
+
+---
+
+## 6. Standard Synthesis Flow
+
+```
 read_liberty -lib lib/sky130_fd_sc_hd__tt_025C_1v80.lib
 read_verilog verilog_files/<file>.v
 synth -top <module_name>
@@ -101,165 +131,266 @@ show
 
 ---
 
-# 🧪 LABS
+### Flow Explanation
+
+The RTL is first read into Yosys, followed by loading the timing library. Synthesis converts RTL into a generic netlist. The design is then optimized, mapped to standard cells, and cleaned to remove unused logic. Finally, the circuit structure can be visualized.
 
 ---
 
-## 🔬 Lab 1 – opt_check
+# LAB SECTION
 
-### Code:
-```verilog
+---
+
+## Objective
+
+The objective of these labs is to analyze how different optimization techniques are applied during synthesis and how they affect the final hardware implementation. The focus is on observing how redundant logic, constants, and unnecessary registers are eliminated.
+
+---
+
+## 1. opt_check
+
+### Code
+
+```
 assign y = a ? b : 0;
 ```
 
-### 🔍 Optimization:
+---
+
+### Explanation
+
+This code represents a multiplexer where the output is either `b` or `0` depending on the value of `a`.
+
+---
+
+### Optimization
+
 ```
 y = a & b
 ```
 
-### 📸 Output:
-![opt_check](screenshots/opt_check.png)
+---
 
-### 💡 Insight:
-- MUX simplified to AND gate  
-- Constant 0 removed logic  
+### Output
+
+![opt_check](screenshots/opt_check.png)
 
 ---
 
-## 🔬 Lab 2 – opt_check2
+### Observations
 
-### Code:
-```verilog
+The synthesis tool recognizes that selecting between `b` and `0` is equivalent to performing an AND operation between `a` and `b`. As a result, the multiplexer is completely removed and replaced with a simple AND gate. This reduces both hardware complexity and delay.
+
+---
+
+## 2. opt_check2
+
+### Code
+
+```
 assign y = a ? 1 : b;
 ```
 
-### 🔍 Optimization:
+---
+
+### Explanation
+
+This represents a multiplexer selecting between constant `1` and input `b`.
+
+---
+
+### Optimization
+
 ```
 y = a | b
 ```
 
-### 📸 Output:
+---
+
+### Output
+
 ![opt_check2](screenshots/opt_check2.png)
 
-### 💡 Insight:
-- MUX simplified to OR gate  
+---
+
+### Observations
+
+The synthesis tool simplifies the logic by recognizing that choosing between `1` and `b` is equivalent to an OR operation. The multiplexer is eliminated and replaced with an OR gate, improving efficiency.
 
 ---
 
-## 🔬 Lab 3 – opt_check3
+## 3. opt_check3
 
-### 📸 Output:
+### Output
+
 ![opt_check3](screenshots/optcheck3_synth.png)
 
-### 💡 Insight:
-- Complex logic simplified using Boolean optimization  
+---
+
+### Explanation
+
+This lab demonstrates how complex conditional logic is simplified through Boolean optimization.
 
 ---
 
-## 🔬 Lab 4 – Logic Simplification Notes
+### Observations
 
-![Logic Notes](screenshots/opt12_logic.png)
-
-### 💡 Insight:
-- Step-by-step Boolean reduction  
-- Shows transformation from complex logic → simplified logic  
+The resulting hardware is significantly reduced compared to the original RTL. The synthesis tool applies multiple optimization passes to eliminate redundant conditions and minimize logic depth.
 
 ---
 
-## 🔬 Lab 5 – dff_const1
+## 4. Boolean Logic Simplification
 
-### 📸 Synthesis:
-![dff_const1](screenshots/dff_constant_01_synth.png)
-
-### 📸 Waveform:
-![waveform](screenshots/dff_const1_waveform.png)
-
-### 💡 Insight:
-- Flip-flop partially optimized  
-- Constant propagation applied  
+![Logic](screenshots/opt12_logic.png)
 
 ---
 
-## 🔬 Lab 6 – dff_const2
+### Explanation
 
-### 📸 Logic:
-![dff_const2](screenshots/dff_const2_logic.png)
-
-### 📸 Waveform:
-![waveform](screenshots/dff_const_waveform.png)
-
-### 💡 Insight:
-- Flip-flop completely removed  
-- Output directly tied to constant  
+This experiment shows step-by-step reduction of a complex Boolean expression into a minimal equivalent form.
 
 ---
 
-## 🔬 Lab 7 – dff_const3
+### Observations
 
-### 📸 Logic:
-![dff_const3](screenshots/dff_const3_logic.png)
-
-### 💡 Insight:
-- Sequential optimization  
-- Intermediate register behavior  
+The transformation highlights how intermediate logic terms are eliminated, resulting in a simpler and faster implementation.
 
 ---
 
-## 🔬 Counter Optimization
+## 5. dff_const1
 
-### 📸 Output:
-![counter_opt](screenshots/count_opt_synth.png)
+### Synthesis Output
 
-### 💡 Insight:
-- Unused bits removed  
-- Logic trimmed  
+![Synthesis](screenshots/dff_constant_01_synth.png)
 
 ---
 
-## 🔬 Counter Optimization 2
+### Waveform
 
-### 📸 Output:
-![counter_opt2](screenshots/counter_opt2_synth.png)
-
-### 💡 Insight:
-- Further optimization  
-- Only required logic retained  
+![Waveform](screenshots/dff_const1_waveform.png)
 
 ---
 
-# 🧠 Key Learnings
+### Explanation
 
-### ✅ Constant Propagation
-- Removes unnecessary logic  
-- Simplifies circuits  
-
-### ✅ Boolean Optimization
-- Reduces expressions  
-- Converts mux → simple gates  
-
-### ✅ Sequential Optimization
-- Flip-flops removed if constant  
-- Registers optimized  
-
-### ✅ Yosys Commands
-- `opt_clean -purge` → removes unused logic  
-- `abc` → technology mapping  
-- `dfflibmap` → FF mapping  
+In this design, part of the flip-flop logic depends on constant values.
 
 ---
 
-# 🔥 Final Conclusion
+### Observations
 
-👉 RTL code ≠ Final hardware  
-👉 Synthesis tools optimize automatically  
-
-### 🚀 Result:
-- Smaller circuits  
-- Faster performance  
-- Efficient design  
+The synthesis tool partially optimizes the flip-flop by removing unnecessary logic while retaining required sequential behavior. This demonstrates partial constant propagation in sequential circuits.
 
 ---
 
-# 💼 Resume Point
+## 6. dff_const2
 
-> Performed combinational and sequential logic optimization using Yosys, including constant propagation, Boolean simplification, and flip-flop optimization, improving hardware efficiency.
+### Logic Output
+
+![Logic](screenshots/dff_const2_logic.png)
+
+---
+
+### Waveform
+
+![Waveform](screenshots/dff_const_waveform.png)
+
+---
+
+### Explanation
+
+This case involves a flip-flop whose output is driven entirely by a constant value.
+
+---
+
+### Observations
+
+The synthesis tool removes the flip-flop completely and directly ties the output to a constant. This is a strong example of sequential optimization where storage elements are eliminated.
+
+---
+
+## 7. dff_const3
+
+### Logic Output
+
+![Logic](screenshots/dff_const3_logic.png)
+
+---
+
+### Explanation
+
+This design contains intermediate sequential elements with conditional behavior.
+
+---
+
+### Observations
+
+The synthesis tool simplifies the structure while preserving required timing behavior. Some sequential elements are retained, but unnecessary logic is removed.
+
+---
+
+## 8. Counter Optimization
+
+### Output
+
+![Counter](screenshots/count_opt_synth.png)
+
+---
+
+### Explanation
+
+This lab analyzes how counters are optimized when certain bits or conditions are unused.
+
+---
+
+### Observations
+
+Unused bits are removed, and only essential counting logic is preserved. This reduces area and improves efficiency.
+
+---
+
+## 9. Counter Optimization 2
+
+### Output
+
+![Counter](screenshots/counter_opt2_synth.png)
+
+---
+
+### Explanation
+
+Further optimization is applied to refine the counter logic.
+
+---
+
+### Observations
+
+The synthesis tool aggressively trims redundant logic and keeps only the required functional components, resulting in a compact implementation.
+
+---
+
+## Flow of Execution
+
+RTL → Optimization → Technology Mapping → Netlist Generation → Verification  
+
+---
+
+## Key Learnings
+
+Constant propagation eliminates unnecessary logic by resolving constant signals early.
+
+Boolean optimization reduces complex expressions into minimal gate-level implementations.
+
+Sequential optimization removes redundant flip-flops and registers.
+
+Synthesis tools automatically perform these optimizations, but writing clean RTL improves results significantly.
+
+---
+
+## Conclusion
+
+This work demonstrates how synthesis transforms RTL into an optimized hardware implementation. It highlights that the written RTL is only an abstract description, and the final hardware is determined by optimization techniques applied during synthesis.
+
+Understanding these optimizations is essential for designing efficient, high-performance digital systems.
+
+---
