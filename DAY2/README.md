@@ -1,196 +1,357 @@
-<h1>DAY 2 – Timing Libraries, PVT and Multi-Module Synthesis</h1>
+# DAY 2 – Timing Libraries, PVT and Multi-Module Synthesis
 
-<hr>
+---
 
-<h2>1. Timing Libraries (.lib)</h2>
+## 1. Timing Libraries (.lib)
 
-<h3>Explanation</h3>
-<p>
-A timing library (.lib) is a technology-specific file that contains detailed electrical and timing characterization of standard cells. 
-These libraries are generated after silicon characterization and are used by synthesis and timing tools to map RTL into real hardware.
-</p>
+### Explanation  
+A timing library (.lib) is a technology-specific file that contains detailed electrical and timing characterization of standard cells. These libraries are generated after silicon characterization and are used by synthesis and timing tools to map RTL into real hardware.
 
-<p>Each cell in the library contains:</p>
-<ul>
-<li>Propagation delay information for different input/output conditions</li>
-<li>Transition (slew) data</li>
-<li>Power consumption (dynamic and leakage)</li>
-<li>Input capacitance and output load constraints</li>
-<li>Setup and hold timing constraints for sequential elements</li>
-</ul>
+Each cell in the library contains:
 
-<p>
-The delay values are stored as lookup tables dependent on input transition, output load capacitance, and PVT conditions. 
-This makes synthesis timing-aware rather than purely logic-based.
-</p>
+- Propagation delay information for different input/output conditions  
+- Transition (slew) data  
+- Power consumption (dynamic and leakage)  
+- Input capacitance and output load constraints  
+- Setup and hold timing constraints for sequential elements  
 
-<h3>Significance</h3>
-<ul>
-<li>Enables realistic hardware mapping</li>
-<li>Ensures timing-aware synthesis</li>
-<li>Allows accurate delay and power estimation</li>
-<li>Forms the foundation for Static Timing Analysis (STA)</li>
-</ul>
+The delay values are stored as lookup tables dependent on:
 
-<h3>Reference</h3>
-<ul>
-<li><a href="https://skywater-pdk.readthedocs.io/en/latest/" target="_blank">SkyWater SKY130 PDK Documentation</a></li>
-<li><a href="https://www.vlsi-expert.com/2012/03/delay-lookup-table-lib-file.html" target="_blank">Timing Library Explanation</a></li>
-</ul>
+- Input transition  
+- Output load capacitance  
+- Process, voltage, and temperature  
 
-<hr>
+This makes the synthesis process timing-aware rather than purely logic-based.
 
-<h2>2. SKY130 Library Explanation</h2>
+---
 
-<p><b>Example:</b> sky130_fd_sc_hd__tt_025C_1v80.lib</p>
+### Significance
 
-<ul>
-<li>sky130 → 130nm technology node</li>
-<li>fd → Foundry design</li>
-<li>sc → Standard cell</li>
-<li>hd → High density</li>
-<li>tt → Typical process</li>
-<li>025C → Temperature</li>
-<li>1v80 → Voltage</li>
-</ul>
+- Enables realistic hardware mapping  
+- Ensures timing-aware synthesis  
+- Allows accurate delay and power estimation  
+- Forms the foundation for Static Timing Analysis  
 
-<img src="screenshots/sky130_lib.png" width="600">
+---
 
-<h3>Reference</h3>
-<ul>
-<li><a href="https://skywater-pdk.readthedocs.io/en/latest/rules/library.html" target="_blank">SKY130 Library Details</a></li>
-</ul>
+## 2. SKY130 Library Explanation
 
-<hr>
+Example:
+```
+sky130_fd_sc_hd__tt_025C_1v80.lib
+```
 
-<h2>3. PVT (Process, Voltage, Temperature)</h2>
+### Breakdown
 
-<h3>Explanation</h3>
-<p>PVT represents real-world variations affecting circuit performance after fabrication.</p>
+- sky130 → 130nm technology  
+- fd → Foundry design  
+- sc → Standard cell  
+- hd → High density  
+- tt → Typical process  
+- 025C → 25°C  
+- 1v80 → 1.8V  
 
-<ul>
-<li><b>Process:</b> Fast (FF), Slow (SS)</li>
-<li><b>Voltage:</b> High → faster, Low → slower</li>
-<li><b>Temperature:</b> High → slow, Low → fast</li>
-</ul>
+---
 
-<h3>Worst Case Condition</h3>
-<p>Slow process, low voltage, high temperature</p>
+### Library View
 
-<h3>Reference</h3>
-<ul>
-<li><a href="https://www.synopsys.com/glossary/what-is-pvt.html" target="_blank">PVT Explanation</a></li>
-</ul>
+![Library](screenshots/sky130_lib.png)
 
-<hr>
+---
 
-<h2>4. Delay, Power, Capacitance and Leakage</h2>
+### Engineering Insight
 
-<h3>Delay</h3>
-<p>Time taken for input change to reflect at output.</p>
+Different library files represent different operating conditions. Changing the library directly affects delay, power, and mapping decisions. The same RTL can produce different gate-level implementations depending on the selected library.
 
-<h3>Power</h3>
-<p>P = α × C × V² × f</p>
+---
 
-<h3>Capacitance</h3>
-<p>Higher capacitance increases delay.</p>
+## 3. PVT (Process, Voltage, Temperature)
 
-<h3>Reference</h3>
-<ul>
-<li><a href="https://www.vlsi-expert.com/2012/02/power-consumption-in-cmos.html" target="_blank">Power in CMOS</a></li>
-</ul>
+### Explanation
 
-<hr>
+PVT represents real-world variations that influence circuit behavior after fabrication.
 
-<h2>5. Comparison of Same Modules</h2>
+- Process variations determine speed  
+- Voltage variations affect delay and power  
+- Temperature variations impact performance  
 
-<p>
-Different RTL implementations can produce the same functionality but different performance due to gate depth, logic levels, and load distribution.
-</p>
+---
 
-<hr>
+### Worst Case Condition
 
-<h2>6. Stacked PMOS</h2>
+Slow process, low voltage, high temperature  
 
-<p>
-Stacked PMOS refers to multiple PMOS transistors connected in series, leading to higher resistance and increased delay.
-</p>
+---
 
-<hr>
+## 4. Delay, Power, Capacitance and Leakage
 
-<h2>7. Divide and Conquer</h2>
+### Delay
 
-<p>
-Large designs are divided into smaller modules for better readability, debugging, and synthesis optimization.
-</p>
+Propagation delay is the time taken for a change in input to affect the output.
 
-<hr>
+---
 
-<h2>LAB SECTION</h2>
+### Power
 
-<h3>Objective</h3>
-<ul>
-<li>Multi-module design</li>
-<li>D Flip-Flop implementation</li>
-<li>Synthesis and GLS</li>
-</ul>
+Dynamic power:
+```
+P = α × C × V² × f
+```
 
-<hr>
+Leakage power:
+Power consumed even in idle state  
 
-<h2>1. Multiple Modules</h2>
+---
 
-<img src="screenshots/multiple_modules_code.png" width="600">
-<img src="screenshots/multiple_modules_synthesis.png" width="600">
-<img src="screenshots/multiple_modules_flat.png" width="600">
-<img src="screenshots/multiple_modules_stats.png" width="600">
+### Capacitance
 
-<hr>
+Higher capacitance results in slower transitions and increased delay.
 
-<h2>2. DFF Async Reset</h2>
+---
 
-<img src="screenshots/code1.png" width="600">
-<img src="screenshots/dff_asyncres_synthesis.png" width="600">
-<img src="screenshots/dff_asyncres_simulation.png" width="600">
+## 5. Comparison of Same Modules
 
-<hr>
+Different RTL implementations of the same functionality can result in different performance due to variations in logic depth, gate count, and load distribution.
 
-<h2>3. DFF Async Set</h2>
+---
 
-<img src="screenshots/code2.png" width="600">
-<img src="screenshots/dff_async_set_synthesis.png" width="600">
-<img src="screenshots/async_set_simulation.png" width="600">
+## 6. Stacked PMOS
 
-<hr>
+Stacked PMOS transistors increase resistance and reduce current flow, leading to slower switching and higher delay.
 
-<h2>4. DFF Sync Reset</h2>
+---
 
-<img src="screenshots/dff_syncres2.png" width="600">
+## 7. Divide and Conquer
 
-<hr>
+Large designs are divided into smaller modules to improve modularity, readability, and synthesis efficiency.
 
-<h2>5. Multiply by 2</h2>
+---
 
-<img src="screenshots/mul2_code.png" width="600">
-<img src="screenshots/mul2_synthesis.png" width="600">
+# LAB SECTION
 
-<hr>
+---
 
-<h2>6. Multiply by 8</h2>
+## Objective
 
-<img src="screenshots/mul8_code.png" width="600">
-<img src="screenshots/mul8_synthesis.png" width="600">
+The objective of this lab is to design, synthesize, and verify RTL modules using the SKY130 standard cell library. The goal is to understand how Verilog descriptions are converted into hardware and how different design styles influence the final implementation.
 
-<hr>
+---
 
-<h2>7. Flattened Design</h2>
+## 1. Multiple Modules Design
 
-<img src="screenshots/flat_multiple_mosules_synthesis.png" width="600">
+### Code
 
-<hr>
+![Code](screenshots/multiple_modules_code.png)
 
-<h2>Commands</h2>
+---
 
-<pre>
+### Explanation
+
+This design demonstrates hierarchical modeling using two submodules integrated into a top module.
+
+The first submodule performs an AND operation between inputs a and b. The second submodule performs an OR operation. The top module connects these submodules through an intermediate signal.
+
+---
+
+### Functional Flow
+
+```
+y = (a & b) | c
+```
+
+---
+
+### Synthesis Output
+
+![Synthesis](screenshots/multiple_modules_synthesis.png)
+
+---
+
+### Flattened Netlist
+
+![Flattened](screenshots/multiple_modules_flat.png)
+
+---
+
+### Statistics
+
+![Stats](screenshots/multiple_,modules_stats.png)
+
+---
+
+### Submodule View
+
+![Submodule](screenshots/submodule_1.png)
+
+![Stats](screenshots/sub_module_stats.png)
+
+---
+
+### Observations
+
+The hierarchical structure is preserved initially, making the design easy to understand and debug. After flattening, all modules merge into one level, enabling better optimization. The netlist confirms correct mapping into AND and OR gates.
+
+---
+
+## 2. D Flip-Flop with Asynchronous Reset
+
+### Code
+
+![Code](screenshots/code1.png)
+
+---
+
+### Explanation
+
+The reset acts independently of the clock. When reset is asserted, output is immediately forced to zero.
+
+---
+
+### Synthesis Output
+
+![Synthesis](screenshots/dff_asyncres_synthesis.png)
+
+---
+
+### Simulation Output
+
+![Simulation](screenshots/dff_asyncres_simulation.png)
+
+---
+
+### Observations
+
+Output changes instantly when reset is applied. The design maps to a flip-flop with a reset pin.
+
+---
+
+## 3. D Flip-Flop with Asynchronous Set
+
+### Code
+
+![Code](screenshots/code2.png)
+
+---
+
+### Explanation
+
+The set signal forces the output to logic high immediately, regardless of clock.
+
+---
+
+### Synthesis Output
+
+![Synthesis](screenshots/dff_async_set_synthesis.png)
+
+---
+
+### Simulation Output
+
+![Simulation](screenshots/async_set_simulation.png)
+
+---
+
+### Observations
+
+Output becomes high immediately when set is active. The design maps correctly to a flip-flop with set functionality.
+
+---
+
+## 4. D Flip-Flop with Synchronous Reset
+
+### Synthesis Output
+
+![Synthesis](screenshots/dff_syncres2.png)
+
+---
+
+### Explanation
+
+Reset is applied only at the clock edge.
+
+---
+
+### Observations
+
+Reset occurs synchronously, making the design stable and predictable.
+
+---
+
+## 5. Multiply by 2
+
+### Code
+
+![Code](screenshots/mul2_code.png)
+
+---
+
+### Explanation
+
+Implemented using left shift operation.
+
+---
+
+### Synthesis Output
+
+![Synthesis](screenshots/mul2_synthesis.png)
+
+---
+
+### Observations
+
+Implemented using wiring instead of arithmetic hardware.
+
+---
+
+## 6. Multiply by 8
+
+### Code
+
+![Code](screenshots/mul8_code.png)
+
+---
+
+### Explanation
+
+Implemented using left shift by 3 bits.
+
+---
+
+### Synthesis Output
+
+![Synthesis](screenshots/mul8_synthesis.png)
+
+---
+
+### Observations
+
+Efficient implementation without multipliers.
+
+---
+
+## 7. Flattened Design
+
+![Flattened](screenshots/flat_multiple_mosules_synthesis.png)
+
+---
+
+### Explanation
+
+Flattening removes hierarchy and combines all logic.
+
+---
+
+### Observations
+
+Improves optimization but reduces readability.
+
+---
+
+## Commands Used
+
+### Synthesis
+
+```
 read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
 read_verilog multiple_modules.v
 synth -top multiple_modules
@@ -198,9 +359,13 @@ dfflibmap -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
 abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
 clean
 write_verilog multiple_modules_net.v
-</pre>
+```
 
-<pre>
+---
+
+### Gate Level Simulation
+
+```
 iverilog my_lib/verilog_model/primitives.v 
 my_lib/verilog_model/sky130_fd_sc_hd.v 
 verilog_files/multiple_modules_net.v 
@@ -208,21 +373,25 @@ verilog_files/multiple_modules_tb.v
 
 ./a.out
 gtkwave multiple_modules.vcd
-</pre>
+```
 
-<hr>
+---
 
-<h2>Key Takeaways</h2>
-<ul>
-<li>Timing libraries enable realistic synthesis</li>
-<li>PVT variations affect chip performance</li>
-<li>Hierarchical design improves scalability</li>
-<li>GLS validates synthesized design</li>
-</ul>
+## Flow of Execution
 
-<hr>
+RTL → Yosys → Library Mapping → Optimization → Netlist → Simulation → Verification  
 
-<h2>Conclusion</h2>
-<p>
-This section connects RTL design with real hardware behavior using timing libraries, synthesis, and simulation.
-</p>
+---
+
+## Key Takeaways
+
+- Timing libraries are essential  
+- PVT affects performance  
+- Hierarchical design improves scalability  
+- GLS ensures correctness  
+
+---
+
+## Conclusion
+
+This day builds a strong understanding of timing-aware RTL design and its transformation into real hardware using synthesis and simulation.
