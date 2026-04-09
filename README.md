@@ -1,76 +1,131 @@
-<h1>RTL Design and Synthesis – Learning Journey</h1>
+# RTL DESIGN MASTERY – Complete Learning Journey
 
-<h2>About this Repository</h2>
+---
 
-<p>
-This repository contains my practice work on RTL design and synthesis using Verilog.
-I started this to understand how digital designs actually work when we write code and run them on tools.
-</p>
+## 1. Overview
 
-<p>
-Instead of only watching lectures, I tried to run each example on my system and see what output I get.
-Sometimes I got errors, fixed them, and then continued. So this repo is more like a record of what I actually did.
-</p>
+This repository documents my complete journey of learning Register Transfer Level (RTL) design using Verilog and open-source tools. The focus is on understanding how high-level RTL code is transformed into optimized gate-level hardware using synthesis and verification flows.
 
-<p>
-I am still learning, so this is not perfect or complete. But it shows my effort to understand the flow step by step.
-</p>
+The repository is structured in a day-wise format, where each day covers specific concepts, experiments, and observations.
 
-<hr>
+---
 
-<h2>What I Worked On</h2>
+## 2. Objectives
 
-<ul>
-  <li>Writing basic Verilog modules</li>
-  <li>Creating testbenches and checking outputs</li>
-  <li>Running simulations using Icarus Verilog</li>
-  <li>Viewing waveforms in GTKWave</li>
-  <li>Running synthesis using Yosys</li>
-</ul>
+* Learn RTL design using Verilog
+* Understand synthesis using Yosys
+* Explore logic optimization techniques
+* Identify common RTL coding mistakes
+* Perform Gate Level Simulation (GLS)
+* Build strong fundamentals for VLSI design
 
-<p>
-While doing this, I started understanding how the same design behaves in simulation and after synthesis.
-</p>
+---
 
-<hr>
+## 3. Tools Used
 
-<h2>How I Did the Work</h2>
+* Verilog HDL for RTL design
+* Yosys for synthesis
+* SKY130 standard cell library
+* Icarus Verilog for simulation
+* GTKWave for waveform analysis
 
-<p>
-For most of the designs, I followed a similar way:
-</p>
+---
 
-<ul>
-  <li>Write the Verilog code</li>
-  <li>Create a testbench</li>
-  <li>Run simulation and check waveform</li>
-  <li>Run synthesis and see the generated logic</li>
-</ul>
+## 4. Repository Structure
 
-<p>
-I tried to keep things simple and focused on understanding what is happening instead of just completing the task.
-</p>
+```
+RTL_DESIGN_MASTERY/
+│
+├── DAY1/
+├── DAY2/
+├── DAY3/
+├── DAY4/
+├── DAY5/
+│
+└── README.md
+```
 
-<hr>
+Each day contains:
 
-<h2>Repository Structure</h2>
+* RTL code
+* Simulation outputs
+* Synthesis results
+* GLS outputs
+* Detailed explanations
 
-<pre>
-Day1/
-Day2/
-Day3/
-Day4/
-Day5/
-</pre>
+---
 
-<p>
-Each folder contains my code files, testbench, and screenshots taken after running the commands.
-</p>
+## 5. Learning Progress
 
-<hr>
+### DAY 1 – Introduction to RTL and Simulation
 
-<h2>Note</h2>
+* Basics of Verilog
+* Simulation using testbenches
+* Understanding waveform outputs
 
-<p>
-All the work here is done by me as part of practice. I referred to concepts when needed, but the execution and outputs are from my own system.
-</p>
+---
+
+### DAY 2 – Synthesis and Yosys Flow
+
+* Introduction to synthesis
+* Yosys command flow
+* Technology mapping using SKY130
+
+---
+
+### DAY 3 – Logic Optimization
+
+* Removal of redundant logic
+* Constant propagation
+* Optimization in combinational and sequential circuits
+
+---
+
+### DAY 4 – Coding Styles and GLS
+
+* Blocking vs non-blocking assignments
+* Bad coding practices
+* Latch inference
+* Gate Level Simulation (GLS)
+
+---
+
+### DAY 5 – Advanced RTL Concepts
+
+* Generate statements
+* Incomplete if/case statements
+* Latch inference analysis
+* Ripple Carry Adder design
+
+---
+
+## 6. Key Concepts Covered
+
+* Combinational vs Sequential Logic
+* Multiplexer Design
+* Flip-Flops and Sequential Circuits
+* Logic Optimization Techniques
+* Latch Inference and Avoidance
+* Gate Level Simulation (GLS)
+* Scalable RTL Design using Generate
+
+---
+
+## 7. Highlights
+
+* Hands-on RTL design and synthesis
+* Real understanding of hardware mapping
+* Debugging RTL vs GLS mismatches
+* Strong focus on practical learning
+* Structured documentation for each experiment
+
+
+---
+
+## 9. Conclusion
+
+This repository represents a structured and practical approach to learning RTL design and synthesis. It demonstrates how coding styles directly impact hardware and emphasizes the importance of verification through Gate Level Simulation.
+
+This journey builds a strong foundation for a career in VLSI design.
+
+---
