@@ -1,102 +1,159 @@
-# DAY 4 – GLS, Blocking vs Non-Blocking, and MUX Design
+# DAY 4 – Blocking vs Non-Blocking, Bad MUX and GLS Verification
 
 ---
 
 ## 1. Introduction
 
-In this lab, I explored important RTL design concepts including Gate Level Simulation (GLS), blocking vs non-blocking assignments, and different ways of designing multiplexers. The focus was to understand how coding style affects synthesized hardware and simulation behavior.
+Day 4 focuses on understanding important RTL coding concepts that directly affect how hardware is synthesized and simulated. Even if code looks correct in simulation, improper coding styles can lead to incorrect hardware behavior after synthesis.
+
+This day mainly covers:
+
+* Difference between blocking and non-blocking assignments
+* Mismatch between simulation and synthesis
+* Bad multiplexer coding styles
+* Importance of Gate Level Simulation (GLS)
+
+These concepts are critical because incorrect RTL coding can introduce functional bugs that are difficult to detect without proper verification.
 
 ---
 
 ## 2. Gate Level Simulation (GLS)
 
-GLS is performed after synthesis to verify that the synthesized netlist behaves the same as the RTL design. It ensures that there are no mismatches between expected and actual hardware behavior.
+GLS is performed after synthesis using the generated netlist and standard cell libraries.
 
 GLS uses:
-- Synthesized netlist  
-- Standard cell libraries  
-- Same testbench  
 
-This step is critical for validating real hardware functionality.
+* Synthesized netlist
+* Standard cell libraries
+* Same testbench
+
+This step is critical for validating that the synthesized hardware behaves exactly as intended.
 
 ---
 
 ## 3. Ternary Operator MUX
 
-### RTL Code
+### Description
 
-![Ternary Operator Code](DAY4/screenshots/ternary_operator_mux_code.png)
-
-### Synthesis Output
-
-![Ternary Operator Synthesis](DAY4/screenshots/ternary_operator_mux_synthesis.png)
-
-### Simulation Output
-
-![Ternary Operator Simulation](DAY4/screenshots/ternary_operator_simulation.png)
-
-### GLS Output
-
-![Ternary Operator GLS](DAY4/screenshots/ternary_operator_gls.png)
-
-### Explanation
-
-The ternary operator is the most efficient way to design a multiplexer in Verilog. The synthesis tool directly maps this expression into a standard MUX cell from the SKY130 library. The simulation waveform shows correct switching behavior based on the select signal. During GLS, the waveform matches RTL perfectly, proving functional equivalence. This confirms that concise RTL leads to optimized and predictable hardware implementation.
+The ternary operator is a compact way to describe a multiplexer in Verilog. It ensures clear combinational logic and avoids unintended latch inference.
 
 ---
 
-## 4. Bad MUX (Incorrect Coding Style)
-
 ### RTL Code
 
-![Bad MUX Code](DAY4/screenshots/bad_mux_code.png)
+![Ternary Operator Code](screenshots/ternary_operator_mux_code.png)
+
+---
+
+### Synthesis Output
+
+![Ternary Operator Synthesis](screenshots/ternary_operator_mux_synthesis.png)
+
+---
 
 ### Simulation Output
 
-![Bad MUX Simulation](DAY4/screenshots/bad_mux_simulation.png)
+![Ternary Operator Simulation](screenshots/ternary_operator_simulation.png)
+
+---
 
 ### GLS Output
 
-![Bad MUX GLS](DAY4/screenshots/bad_mux_gls.png)
+![Ternary Operator GLS](screenshots/ternary_operator_gls.png)
 
-### Explanation
+---
 
-In this design, the MUX is written using an always block with sensitivity only to the select signal. This is incorrect because the output should also depend on input signals. Due to this incomplete sensitivity list, simulation may produce incorrect or misleading results. GLS reveals the actual hardware behavior, which may differ from RTL simulation. This demonstrates why proper sensitivity lists or continuous assignments should be used.
+### Observation
+
+* RTL simulation shows correct mux behavior based on select signal
+* Synthesized netlist clearly maps to a 2:1 multiplexer structure
+* GLS output matches RTL simulation, confirming correct hardware implementation
+* No mismatch observed, indicating proper coding style
+
+---
+
+## 4. Bad MUX Design
+
+### Description
+
+Improper coding of a multiplexer can lead to unintended latches or incorrect synthesis results.
+
+---
+
+### Code
+
+![Bad MUX Code](screenshots/bad_mux_code.png)
+
+---
+
+### Simulation
+
+![Bad MUX Simulation](screenshots/bad_mux_simulation.png)
+
+---
+
+### GLS Output
+
+![Bad MUX GLS](screenshots/bad_mux_gls.png)
+
+---
+
+### Observation
+
+* RTL simulation may appear correct due to ideal behavioral modeling
+* During synthesis, incomplete assignments lead to latch inference
+* GLS output shows mismatch compared to RTL simulation
+* This highlights that improper coding leads to incorrect hardware
 
 ---
 
 ## 5. Blocking Assignment Caveat
 
-### RTL Code
+### Description
 
-![Blocking Caveat Code](DAY4/screenshots/blocking_caveat_code.png)
+Blocking assignments (=) execute sequentially in simulation, which may not reflect actual hardware behavior.
 
-### Simulation Output
+---
 
-![Blocking Caveat Simulation](DAY4/screenshots/blocking_caveat_simulation.png)
+### Code
+
+![Blocking Code](screenshots/blocking_caveat_code.png)
+
+---
+
+### Simulation
+
+![Blocking Simulation](screenshots/blocking_caveat_simulation.png)
+
+---
 
 ### GLS Output
 
-![Blocking Caveat GLS](DAY4/screenshots/blocking_caveat_gls.png)
+![Blocking GLS](screenshots/blocking_caveat_gls.png)
 
-### Explanation
+---
 
-Blocking assignments execute sequentially within an always block, which can lead to unintended behavior in combinational logic. In this example, intermediate variables affect final outputs in a way that may not reflect parallel hardware execution. The simulation waveform shows dependency issues, while GLS reveals how synthesis interprets the logic. This highlights the importance of using non-blocking assignments or proper coding styles for predictable hardware behavior.
+### Observation
+
+* RTL simulation executes statements sequentially, giving expected results
+* Synthesized hardware operates in parallel, not sequentially
+* GLS output differs from RTL simulation
+* This demonstrates why blocking assignments can cause functional mismatches
 
 ---
 
 ## 6. Key Learnings
 
-- GLS is essential to verify synthesized hardware  
-- Ternary operator produces clean and optimized MUX design  
-- Poor coding styles lead to mismatches between RTL and GLS  
-- Blocking assignments can cause unintended logic behavior  
-- Writing proper RTL ensures correct synthesis and simulation  
+* Understood difference between blocking and non-blocking assignments
+* Learned how bad coding styles lead to latch inference
+* Observed mismatch between RTL simulation and GLS
+* Importance of GLS in verifying real hardware behavior
+* Learned best practices for writing synthesizable RTL
 
 ---
 
 ## 7. Conclusion
 
-Day 4 provided a deeper understanding of how RTL design choices impact real hardware. By comparing RTL simulation with GLS, I learned how synthesis tools interpret code and optimize logic. Writing clean, correct, and hardware-aware Verilog is crucial for successful VLSI design.
+Day 4 emphasized the importance of writing correct RTL code that matches hardware behavior. Through various examples, it was observed that improper coding styles can lead to mismatches between simulation and synthesized results. Gate Level Simulation plays a crucial role in identifying such issues and ensuring reliable hardware design.
 
 ---
