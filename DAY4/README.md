@@ -1,396 +1,102 @@
-# 📅 Day 4 – RTL Design & Synthesis Workshop
+# DAY 4 – GLS, Blocking vs Non-Blocking, and MUX Design
 
 ---
 
-## 🚀 Overview
+## 1. Introduction
 
-Welcome to **Day 4** of the RTL Design & Synthesis Workshop.
-
-Today’s session focuses on **core RTL design concepts that directly impact real silicon behavior**:
-
-- Gate-Level Simulation (GLS)
-- Blocking vs Non-Blocking Assignments
-- Synthesis vs Simulation Mismatch
-
-📌 These are **very important for VLSI interviews + industry design practices**
+In this lab, I explored important RTL design concepts including Gate Level Simulation (GLS), blocking vs non-blocking assignments, and different ways of designing multiplexers. The focus was to understand how coding style affects synthesized hardware and simulation behavior.
 
 ---
 
-## 📚 Table of Contents
+## 2. Gate Level Simulation (GLS)
 
-1. Gate-Level Simulation (GLS)  
-2. Synthesis vs Simulation Mismatch  
-3. Blocking vs Non-Blocking  
-4. Labs (with Commands)  
-5. Key Learnings  
+GLS is performed after synthesis to verify that the synthesized netlist behaves the same as the RTL design. It ensures that there are no mismatches between expected and actual hardware behavior.
 
----
+GLS uses:
+- Synthesized netlist  
+- Standard cell libraries  
+- Same testbench  
 
-# 🧠 1. Gate-Level Simulation (GLS)
-
-## 📌 Definition
-
-GLS is the process of simulating the **gate-level netlist generated after synthesis**.
-
-👉 Flow:  
-RTL → Synthesis → Gate-Level Netlist → GLS
+This step is critical for validating real hardware functionality.
 
 ---
 
-## 🎯 Why GLS is Important?
+## 3. Ternary Operator MUX
 
-- ✅ Ensures synthesis tool correctly converted RTL to gates  
-- ✅ Detects **timing-related issues** (setup/hold violations)  
-- ✅ Verifies **real hardware behavior**  
-- ✅ Helps validate **DFT structures (scan chains)**  
+### RTL Code
 
----
+![Ternary Operator Code](DAY4/screenshots/ternary_operator_mux_code.png)
 
-## 🔄 GLS Flow
+### Synthesis Output
 
-![GLS Flow](screenshots/gls_flow.png)
+![Ternary Operator Synthesis](DAY4/screenshots/ternary_operator_mux_synthesis.png)
 
----
+### Simulation Output
 
-## ⚙️ Types of GLS
+![Ternary Operator Simulation](DAY4/screenshots/ternary_operator_simulation.png)
 
-1. **Functional GLS**
-   - No delays (ideal simulation)
-   - Used for logic verification
+### GLS Output
 
-2. **Timing GLS**
-   - Includes delays (SDF annotation)
-   - Used for timing validation
+![Ternary Operator GLS](DAY4/screenshots/ternary_operator_gls.png)
+
+### Explanation
+
+The ternary operator is the most efficient way to design a multiplexer in Verilog. The synthesis tool directly maps this expression into a standard MUX cell from the SKY130 library. The simulation waveform shows correct switching behavior based on the select signal. During GLS, the waveform matches RTL perfectly, proving functional equivalence. This confirms that concise RTL leads to optimized and predictable hardware implementation.
 
 ---
 
-## ⚙️ Commands Used
+## 4. Bad MUX (Incorrect Coding Style)
 
-### Step 1: Compile
-```bash
-iverilog primitives.v sky130_fd_sc_hd.v design.v tb.v
-```
+### RTL Code
 
-### Step 2: Run Simulation
-```bash
-./a.out
-```
+![Bad MUX Code](DAY4/screenshots/bad_mux_code.png)
 
-### Step 3: View Waveform
-```bash
-gtkwave dump.vcd
-```
+### Simulation Output
 
----
+![Bad MUX Simulation](DAY4/screenshots/bad_mux_simulation.png)
 
-# ⚠️ 2. Synthesis vs Simulation Mismatch
+### GLS Output
 
-## 📌 Definition
+![Bad MUX GLS](DAY4/screenshots/bad_mux_gls.png)
 
-Mismatch occurs when:
+### Explanation
 
-👉 RTL Simulation Output ≠ Gate-Level Output
+In this design, the MUX is written using an always block with sensitivity only to the select signal. This is incorrect because the output should also depend on input signals. Due to this incomplete sensitivity list, simulation may produce incorrect or misleading results. GLS reveals the actual hardware behavior, which may differ from RTL simulation. This demonstrates why proper sensitivity lists or continuous assignments should be used.
 
 ---
 
-## ❗ Why It Happens?
+## 5. Blocking Assignment Caveat
 
-1. **Missing Sensitivity List**
-2. **Wrong assignment type (= vs <=)**
-3. **Improper coding style**
-4. **Use of non-synthesizable constructs**
-5. **Blocking order issues**
+### RTL Code
 
----
+![Blocking Caveat Code](DAY4/screenshots/blocking_caveat_code.png)
 
-## 🔥 Real Example
+### Simulation Output
 
-![Mismatch](screenshots/wrong_bad_mux.png)
+![Blocking Caveat Simulation](DAY4/screenshots/blocking_caveat_simulation.png)
 
-👉 Simulator assumes ideal behavior  
-👉 Synthesis creates real hardware → mismatch occurs
+### GLS Output
 
----
+![Blocking Caveat GLS](DAY4/screenshots/blocking_caveat_gls.png)
 
-# 🔁 3. Blocking vs Non-Blocking
+### Explanation
+
+Blocking assignments execute sequentially within an always block, which can lead to unintended behavior in combinational logic. In this example, intermediate variables affect final outputs in a way that may not reflect parallel hardware execution. The simulation waveform shows dependency issues, while GLS reveals how synthesis interprets the logic. This highlights the importance of using non-blocking assignments or proper coding styles for predictable hardware behavior.
 
 ---
 
-## 🔵 Blocking (=)
+## 6. Key Learnings
 
-- Executes **sequentially (top to bottom)**
-- Immediate update
-- Order of statements matters
-- Used in **combinational logic**
-
-```verilog
-always @(*) begin
-  a = b;
-  c = a;  // uses updated 'a'
-end
-```
-
-📌 Important:
-👉 Each line executes immediately → like software execution
+- GLS is essential to verify synthesized hardware  
+- Ternary operator produces clean and optimized MUX design  
+- Poor coding styles lead to mismatches between RTL and GLS  
+- Blocking assignments can cause unintended logic behavior  
+- Writing proper RTL ensures correct synthesis and simulation  
 
 ---
 
-## 🟢 Non-Blocking (<=)
+## 7. Conclusion
 
-- Executes **in parallel**
-- Updates happen at end of time step
-- Used in **sequential logic (flip-flops)**
-
-```verilog
-always @(posedge clk) begin
-  q <= d;
-end
-```
-
-📌 Important:
-👉 All RHS evaluated first → then assigned together
+Day 4 provided a deeper understanding of how RTL design choices impact real hardware. By comparing RTL simulation with GLS, I learned how synthesis tools interpret code and optimize logic. Writing clean, correct, and hardware-aware Verilog is crucial for successful VLSI design.
 
 ---
-
-## 📸 Comparison
-
-![Comparison](screenshots/blocking_vs_nonblocking.png)
-
----
-
-# ⚠️ 4. Missing Sensitivity List
-
-## ❌ Wrong Code
-
-```verilog
-always @(sel)
-```
-
-👉 Only triggers when `sel` changes  
-👉 Ignores `i0`, `i1` → incorrect simulation  
-
----
-
-## ✅ Correct Code
-
-```verilog
-always @(*)
-```
-
-👉 Automatically includes all inputs  
-
----
-
-## 📸 Visualization
-
-![Sensitivity](screenshots/missing_sentivity.png)
-
----
-
-# 🧪 5. LABS (WITH COMMANDS)
-
----
-
-## 🔬 Lab 1 – Ternary Operator MUX
-
-```verilog
-module ternary_operator_mux (input i0, input i1, input sel, output y);
-  assign y = sel ? i1 : i0;
-endmodule
-```
-
----
-
-### ▶️ Simulation Commands
-
-```bash
-iverilog ternary_operator_mux.v tb.v
-./a.out
-gtkwave dump.vcd
-```
-
----
-
-## 📸 Output
-
-![MUX Output](screenshots/correct_ternary_operator.png)
-
----
-
-## 🔬 Lab 2 – Synthesis using Yosys
-
-### ▶️ Commands
-
-```bash
-yosys
-read_liberty -lib sky130_fd_sc_hd__tt_025C_1v80.lib
-read_verilog ternary_operator_mux.v
-synth -top ternary_operator_mux
-abc -liberty sky130_fd_sc_hd__tt_025C_1v80.lib
-show
-```
-
----
-
-## 📸 Output
-
-![Synthesis](screenshots/ternary_synthesis.png)
-
----
-
-## 🔬 Lab 3 – GLS of MUX
-
-### ▶️ Commands
-
-```bash
-iverilog primitives.v sky130_fd_sc_hd.v ternary_operator_mux.v tb.v
-./a.out
-gtkwave dump.vcd
-```
-
----
-
-## 📸 Output
-
-![GLS](screenshots/gls_bad_mux.png)
-
----
-
-## 🔬 Lab 4 – Bad MUX
-
-```verilog
-module bad_mux (input i0, input i1, input sel, output reg y);
-  always @(sel) begin
-    if(sel)
-      y <= i1;
-    else
-      y <= i0;
-  end
-endmodule
-```
-
----
-
-## ❌ Issues
-
-- Missing sensitivity list  
-- Using non-blocking in combinational logic  
-- Causes mismatch  
-
----
-
-## 📸 Output
-
-![Bad MUX](screenshots/bad_mux_comparition.png)
-
----
-
-## 🔬 Lab 5 – Fixed MUX
-
-```verilog
-always @(*) begin
-  if(sel)
-    y = i1;
-  else
-    y = i0;
-end
-```
-
----
-
-## 📸 Correct Output
-
-![Fixed](screenshots/correct_blocling_cavity.png)
-
----
-
-## 🔬 Lab 6 – Blocking Caveat
-
-```verilog
-module blocking_caveat(input a, input b, input c, output reg d);
-  reg x;
-  always @(*) begin
-    d = x & c;
-    x = a | b;
-  end
-endmodule
-```
-
----
-
-## ❗ Problem
-
-👉 Order matters → uses **old value of x**
-
----
-
-## 📸 Issue
-
-![Issue](screenshots/blocking_caveat.png)
-
----
-
-## ✅ Correct Code
-
-```verilog
-always @(*) begin
-  x = a | b;
-  d = x & c;
-end
-```
-
----
-
-## 📸 Correct Output
-
-![Correct](screenshots/right_blocking_cavity.png)
-
----
-
-## 🔬 Lab 7 – Synthesis
-
-### ▶️ Commands
-
-```bash
-yosys
-read_liberty -lib sky130_fd_sc_hd__tt_025C_1v80.lib
-read_verilog blocking_caveat.v
-synth -top blocking_caveat
-abc -liberty sky130_fd_sc_hd__tt_025C_1v80.lib
-show
-```
-
----
-
-## 📸 Output
-
-![Synthesis](screenshots/synth_blocking_cavity.png)
-
----
-
-# 🔥 Advanced Understanding
-
-![Detailed](screenshots/blocking_cavity_comparision.png)
-
-👉 Demonstrates real hardware difference due to assignment order
-
----
-
-# 🧠 Key Learnings
-
-✔ Use `always @(*)` for combinational logic  
-✔ Use `=` → combinational  
-✔ Use `<=` → sequential  
-✔ Order matters in blocking assignments  
-✔ Always verify using GLS  
-✔ Avoid synthesis-simulation mismatch  
-
----
-
-# 💡 Final Tip
-
-> 🔥 “RTL working ≠ Hardware working”
-
-Always verify:
-- RTL Simulation  
-- Gate-Level Simulation  
