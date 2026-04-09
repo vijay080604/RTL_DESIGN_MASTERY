@@ -1,127 +1,245 @@
-# DAY 5 – Generate Blocks, Incomplete Cases, and Arithmetic Circuits
+# DAY 5 – Generate Statements, Incomplete Constructs and Arithmetic Circuits
 
 ---
 
 ## 1. Introduction
 
-In this lab, I explored advanced RTL design concepts including generate statements, incomplete case/if conditions, and arithmetic circuit design using ripple carry adders (RCA). The focus was to understand how scalable hardware is designed and how improper coding can lead to unintended latch inference during synthesis.
+Day 5 focuses on advanced RTL coding techniques and how synthesis tools interpret different coding styles. The experiments performed in this lab highlight how incorrect or incomplete coding can lead to unintended hardware such as latches, while structured coding using generate blocks improves scalability and design clarity.
+
+This day mainly covers:
+
+* Generate statements for scalable hardware design
+* Behavior of incomplete if and case statements
+* Latch inference due to missing assignments
+* Design and verification of arithmetic circuits like Ripple Carry Adder (RCA)
+* Comparison between RTL simulation, synthesis, and GLS
+
+Understanding these concepts is critical for writing robust and synthesizable RTL code.
 
 ---
 
-## 2. DEMUX using Case Statement
+## 2. Generate Statement – Demultiplexer
 
-### Simulation Output
-![DEMUX Case Simulation](DAY5/screenshots/demux_case_simulation.png)
+### Description
 
-### Synthesis Output
-![DEMUX Case Synthesis](DAY5/screenshots/demux_case_synthesis.png)
-
-### Explanation
-
-The DEMUX is implemented using a case statement where the input is routed to one of the outputs based on the select signal. The simulation waveform shows correct one-hot behavior, where only one output is active at a time. During synthesis, the tool converts this into combinational logic using AND/OR gates. Since all cases are covered, no latch is inferred, ensuring proper combinational implementation.
+Generate blocks are used to create multiple instances of hardware efficiently. In this experiment, a demultiplexer is implemented using generate constructs.
 
 ---
 
-## 3. DEMUX using Generate Statement
+### Code
 
-### RTL Code
-![DEMUX Generate Code](DAY5/screenshots/demux_generate_code.png)
+![Demux Generate Code](screenshots/demux_generate_code.png)
 
-### Simulation Output
-![DEMUX Generate Simulation](DAY5/screenshots/demux_generate_simulation.png)
+---
 
-### Synthesis Output
-![DEMUX Generate Synthesis](DAY5/screenshots/demux_generate_synthesis.png)
+### Simulation
+
+![Demux Generate Simulation](screenshots/demux_generate_simulation.png)
+
+---
+
+### Synthesis
+
+![Demux Generate Synthesis](screenshots/demux_generate_synthesis.png)
+
+---
 
 ### GLS Output
-![DEMUX Generate GLS](DAY5/screenshots/demux_generator_gls.png)
 
-### Explanation
+![Demux Generate GLS](screenshots/demux_generator_gls.png)
 
-The generate construct is used to create scalable hardware using loops. In this DEMUX design, multiple outputs are generated using a for-loop, making the design compact and reusable. The simulation confirms correct behavior for all select values. Synthesis expands the loop into parallel hardware. GLS matches RTL output, proving that generate blocks correctly translate into actual hardware structures.
+---
+
+### Observation
+
+* Generate block expands into multiple hardware instances during synthesis
+* RTL simulation shows correct demultiplexing behavior
+* Synthesized netlist reflects parallel hardware structure
+* GLS output matches RTL, confirming correct implementation
+* Demonstrates scalability and clean hardware generation
+
+---
+
+## 3. Case-Based Demultiplexer
+
+### Description
+
+A demultiplexer is implemented using case statements to observe how synthesis interprets conditional constructs.
+
+---
+
+### Simulation
+
+![Demux Case Simulation](screenshots/demux_case_simulation.png)
+
+---
+
+### Synthesis
+
+![Demux Case Synthesis](screenshots/demux_case_synthesis.png)
+
+---
+
+### Observation
+
+* Case statement correctly selects output line based on input
+* Synthesized hardware behaves as expected when all cases are defined
+* No latch inference observed due to complete case coverage
 
 ---
 
 ## 4. Incomplete Case Statement
 
-### RTL Code
-![Incomplete Case Code](DAY5/screenshots/incomp_codes.png)
+### Description
 
-### Simulation Output
-![Incomplete Case Simulation](DAY5/screenshots/incomp_case_simulation.png)
-
-### Synthesis Output
-![Incomplete Case Synthesis](DAY5/screenshots/incomp_case_synthesis.png)
-
-### Explanation
-
-In this example, not all possible input conditions are covered in the case statement. As a result, the output retains its previous value for unspecified cases. This behavior forces the synthesis tool to infer a latch. The synthesized diagram clearly shows latch elements, highlighting unintended sequential behavior. This demonstrates why all cases must be explicitly defined in combinational logic.
+Incomplete case statements can lead to unintended latch inference because not all input conditions are covered.
 
 ---
 
-## 5. Incomplete IF Statements
+### Code
 
-### IF Condition Simulation
-![Incomplete IF Simulation](DAY5/screenshots/incomp_if_simulation.png)
-
-### IF Synthesis Output
-![Incomplete IF Synthesis](DAY5/screenshots/incomp_if_synthesis.png)
-
-### IF-ELSE Condition Simulation
-![Incomplete IF2 Simulation](DAY5/screenshots/incomp_if2_simulation.png)
-
-### Explanation
-
-Incomplete if statements also lead to latch inference when outputs are not assigned in all branches. In the first case, missing else conditions cause the output to hold previous values. In the second case, partial conditions still result in unintended storage elements. The synthesis diagrams confirm latch inference. This highlights the importance of writing fully specified combinational logic.
+![Incomplete Case Code](screenshots/incomp_codes.png)
 
 ---
 
-## 6. MUX using Generate
+### Simulation
 
-### Simulation Output
-![MUX Generate Simulation](DAY5/screenshots/mux_generate_simulation.png)
+![Incomplete Case Simulation](screenshots/incomp_case_simulation.png)
 
-### Synthesis Output
-![MUX Generate Synthesis](DAY5/screenshots/mux_generate_synthesis.png)
+---
+
+### Synthesis
+
+![Incomplete Case Synthesis](screenshots/incomp_case_synthesis.png)
+
+---
+
+### Observation
+
+* RTL simulation may not clearly show issues
+* Synthesis infers latches to preserve previous values
+* Hardware becomes sequential instead of purely combinational
+* Demonstrates importance of covering all cases
+
+---
+
+## 5. Incomplete If Statements
+
+### Description
+
+Missing else conditions in if statements can also lead to latch inference.
+
+---
+
+### Simulation (Case 1)
+
+![Incomplete If Simulation](screenshots/incomp_if_simulation.png)
+
+---
+
+### Synthesis (Case 1)
+
+![Incomplete If Synthesis](screenshots/incomp_if_synthesis.png)
+
+---
+
+### Simulation (Case 2)
+
+![Incomplete If2 Simulation](screenshots/incomp_if2_simulation.png)
+
+---
+
+### Observation
+
+* Missing else condition causes output to retain previous value
+* Synthesizer introduces latches to maintain state
+* RTL and synthesized behavior may differ
+* Highlights need for complete conditional assignments
+
+---
+
+## 6. Generate-Based MUX
+
+### Description
+
+Multiplexer design using generate blocks to build scalable structures.
+
+---
+
+### Simulation
+
+![MUX Generate Simulation](screenshots/mux_generate_simulation.png)
+
+---
+
+### Synthesis
+
+![MUX Generate Synthesis](screenshots/mux_generate_synthesis.png)
+
+---
 
 ### GLS Output
-![MUX Generate GLS](DAY5/screenshots/mux_generate_gls.png)
 
-### Explanation
+![MUX Generate GLS](screenshots/mux_generate_gls.png)
 
-The MUX is implemented using generate constructs to handle multiple inputs efficiently. The simulation waveform verifies correct selection based on control signals. During synthesis, the design is mapped into optimized multiplexer cells. GLS confirms functional equivalence with RTL. This demonstrates how generate blocks simplify large designs while maintaining correctness.
+---
+
+### Observation
+
+* Generate constructs create structured multiplexer hierarchy
+* Synthesized hardware shows repeated patterns
+* GLS output matches RTL behavior
+* Confirms correctness of scalable design
 
 ---
 
 ## 7. Ripple Carry Adder (RCA)
 
-### RTL Code
-![RCA Code](DAY5/screenshots/rca_fa_code.png)
+### Description
 
-### Simulation Output
-![RCA Simulation](DAY5/screenshots/rca_simulation.png)
+Ripple Carry Adder is a basic arithmetic circuit where carry propagates from one stage to the next.
+
+---
+
+### Code
+
+![RCA Code](screenshots/rca_fa_code.png)
+
+---
+
+### Simulation
+
+![RCA Simulation](screenshots/rca_simulation.png)
+
+---
 
 ### GLS Output
-![RCA GLS](DAY5/screenshots/rca_gls.png)
 
-### Explanation
+![RCA GLS](screenshots/rca_gls.png)
 
-The ripple carry adder is built using multiple full adders connected in series using a generate loop. Each stage passes the carry to the next stage, creating a chain structure. The simulation waveform shows correct addition of two 8-bit numbers. GLS results match RTL, confirming proper synthesis. This example demonstrates hierarchical design and scalability using generate constructs.
+---
+
+### Observation
+
+* Sum and carry propagate sequentially through stages
+* RTL simulation shows correct addition behavior
+* GLS confirms accurate gate-level implementation
+* Demonstrates delay due to carry propagation
 
 ---
 
 ## 8. Key Learnings
 
-- Generate blocks help design scalable and reusable hardware  
-- Case and if statements must be complete to avoid latch inference  
-- Latches are unintentionally created due to incomplete assignments  
-- GLS helps verify synthesized hardware behavior  
-- Complex designs like RCA can be efficiently built using modular design  
+* Learned usage of generate statements for scalable design
+* Understood latch inference due to incomplete coding
+* Observed differences between combinational and sequential behavior
+* Learned importance of complete case and if statements
+* Verified designs using GLS for real hardware validation
 
 ---
 
 ## 9. Conclusion
 
-Day 5 focused on writing scalable and correct RTL code using generate constructs and understanding the risks of incomplete logic descriptions. By analyzing synthesis results and GLS, I learned how improper coding leads to unintended hardware such as latches. This lab strengthened my understanding of writing clean and hardware-efficient Verilog.
+Day 5 provided deep insights into RTL coding practices and their impact on synthesis. It highlighted the importance of writing complete and structured code to avoid unintended hardware. Generate constructs proved useful for scalable designs, while GLS helped validate the correctness of synthesized circuits.
 
 ---
